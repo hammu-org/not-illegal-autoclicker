@@ -1,49 +1,48 @@
+Here's a restructured and more readable version of your ROADMAP.md:
 
----
-#   STATUS:   
-    #   Macbook: 
-    #   Windows:
+# Project Status
 
-Autoclicker toggle:
-[Start (f13)] [Stop (F13)]
+| Platform  | Status |
+|-----------|--------|
+| Macbook   |   ✅    |
+| Windows   |   ✅    |
 
-----
-#   STATUS:   
-    #   Macbook: 
-    #   Windows:
+## Autoclicker Controls
 
-Click interval: >   Input fields [] mins, [] secs and [] milliseconds
-                    +>   Random offset +-  [] milliseconds
+- **Toggle:**
+  - Start: `[F12]`
+  - Stop: `[F12]`
 
-Click repeat:   >   Repeat [] times
-                >   Repeat until stopped
+## Click Settings
 
-----
-#   STATUS:   
-    #   Macbook: 
-    #   Windows:
+- **Click Interval:**
+  - Input fields: `[  ]` mins, `[  ]` secs, `[  ]` milliseconds
+  - Random offset: `± [  ]` milliseconds
 
-OG Location: Pick Location X[] Y[]   
-Click Location: Pick Location X[] Y[]
+- **Click Repeat:**
+  - Repeat `[  ]` times
+  - Or repeat until stopped
 
-+> [] Modify so that the mouse moves back to the OG Location after clicking desired click location and sleeping for random time.
-+> [] Modify so that the mouse moves back to a random location, after clicking desired click location and sleeping for random time.
+## Mouse Location
 
-----
-#   STATUS:   
-    #   Macbook: 
-    #   Windows:
+- **Original Location:**  
+  - Pick Location: X `[  ]`, Y `[  ]`
+- **Click Location:**  
+  - Pick Location: X `[  ]`, Y `[  ]`
 
-HotKey Input: 
-    Input/Select Keypress:[]
-    Press Interval: 
-        ->  Random offset +- [] milliseconds
+- **After Click Actions:**
+  - [ ] Move mouse back to original location after clicking and waiting a random time
+  - [ ] Move mouse to a random location after clicking and waiting a random time
 
+## HotKey Input
 
-----
-#   STATUS:   
-    #   Macbook: 
-    #   Windows:
+- **Input/Select Keypress:** `[  ]`
+- **Press Interval:**  
+  - Random offset: `± [  ]` milliseconds
 
-----
-#   STATUS:   
+# Additional Notes
+
+| Platform  | Status |
+|-----------|--------|
+| Macbook   |   ✅    |
+| Windows   |   ✅    |
