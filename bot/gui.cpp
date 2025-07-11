@@ -26,9 +26,12 @@ private:
   wxTextCtrl *intervalMinCtrl, *intervalSecCtrl, *intervalMsCtrl;
   wxStaticText *moveStatusLabel;
   wxStaticText *clickStatusLabel;
+  wxStaticText *offsetLabel;
+  wxSlider *offsetSlider;
   wxTimer moveTimer;
   bool isMoving = false;
   bool isClicking = false;
+  int randomOffsetMs = 200;
 };
 
 MyFrame::MyFrame() : wxFrame(nullptr, wxID_ANY, "Autoclicker GUI", wxDefaultPosition, wxSize(500, 500)), moveTimer(this)
@@ -101,6 +104,19 @@ MyFrame::MyFrame() : wxFrame(nullptr, wxID_ANY, "Autoclicker GUI", wxDefaultPosi
   intervalGrid->AddGrowableCol(3, 1);
   intervalGrid->AddGrowableCol(5, 1);
   intervalSizer->Add(intervalGrid, 0, wxALL | wxEXPAND, 12);
+
+  // Add random offset slider and label (ms)
+  auto *offsetSizer = new wxBoxSizer(wxHORIZONTAL);
+  offsetLabel = new wxStaticText(panel, wxID_ANY, "Random Offset (ms): 200");
+  offsetSlider = new wxSlider(panel, wxID_ANY, 200, 0, 2000, wxDefaultPosition, wxSize(160, -1));
+  offsetSizer->Add(offsetLabel, 0, wxALIGN_CENTER_VERTICAL | wxRIGHT, 8);
+  offsetSizer->Add(offsetSlider, 1, wxALIGN_CENTER_VERTICAL);
+  intervalSizer->Add(offsetSizer, 0, wxALL | wxEXPAND, 8);
+  offsetSlider->Bind(wxEVT_SLIDER, [this](wxCommandEvent &evt)
+                     {
+    randomOffsetMs = offsetSlider->GetValue();
+    offsetLabel->SetLabel(wxString::Format("Random Offset (ms): %d", randomOffsetMs)); });
+
   clickStatusLabel = new wxStaticText(panel, wxID_ANY, "Click Status: Idle");
   wxFont clickStatusFont = fontBold;
   clickStatusFont.SetPointSize(11);
@@ -190,11 +206,21 @@ void MyFrame::StartClickLoop()
       intervalMinCtrl->GetValue().ToLong(&min);
       intervalSecCtrl->GetValue().ToLong(&sec);
       intervalMsCtrl->GetValue().ToLong(&ms);
-      long interval = min * 60000 + sec * 1000 + ms;
+      long baseInterval = min * 60000 + sec * 1000 + ms;
+      if (baseInterval < 1) baseInterval = 1;
+
+      // Setup randomizer for ±user-selected offset in ms
+      std::random_device rd;
+      std::mt19937 gen(rd());
+      int offsetRange = randomOffsetMs;
+      std::uniform_int_distribution<int> dist(-offsetRange, offsetRange);
+
       while (isClicking)
       {
         leftClick();
-        wxMilliSleep(interval);
+        int randomized = baseInterval + dist(gen);
+        if (randomized < 1) randomized = 1;
+        wxMilliSleep(randomized);
       }
       wxTheApp->CallAfter([this]() {
         isClicking = false;
