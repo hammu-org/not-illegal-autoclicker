@@ -33,6 +33,7 @@ private:
 
 MyFrame::MyFrame() : wxFrame(nullptr, wxID_ANY, "Not Illegal Autoclicker", wxDefaultPosition, wxSize(700, 600))
 {
+  SetMinSize(wxSize(700, 600));
   auto *panel = new wxPanel(this);
   auto *mainSizer = new wxBoxSizer(wxVERTICAL);
 
