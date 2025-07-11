@@ -37,13 +37,6 @@ MyFrame::MyFrame() : wxFrame(nullptr, wxID_ANY, "Not Illegal Autoclicker", wxDef
   auto *panel = new wxPanel(this);
   auto *mainSizer = new wxBoxSizer(wxVERTICAL);
 
-  // Cursor position display section
-  auto *cursorPosBox = new wxStaticBox(panel, wxID_ANY, "Cursor Position (on Click)");
-  auto *cursorPosSizer = new wxStaticBoxSizer(cursorPosBox, wxVERTICAL);
-  cursorPosLabel = new wxStaticText(panel, wxID_ANY, "X: -  Y: -");
-  cursorPosSizer->Add(cursorPosLabel, 0, wxALL | wxEXPAND, 8);
-  mainSizer->Add(cursorPosSizer, 0, wxALL | wxEXPAND, 16);
-
   intervalHourCtrl = new wxTextCtrl(panel, wxID_ANY, "0");
   intervalMinCtrl = new wxTextCtrl(panel, wxID_ANY, "0");
   intervalSecCtrl = new wxTextCtrl(panel, wxID_ANY, "0");
@@ -102,17 +95,18 @@ MyFrame::MyFrame() : wxFrame(nullptr, wxID_ANY, "Not Illegal Autoclicker", wxDef
   stopGrid->AddGrowableCol(5, 1);
   stopGrid->AddGrowableCol(7, 1);
   stopSizer->Add(stopGrid, 0, wxALL | wxEXPAND, 8);
-  mainSizer->Add(stopSizer, 0, wxALL | wxEXPAND, 8);
+  mainSizer->Add(stopSizer, 0, wxALL | wxEXPAND, 16);
 
   // Divider before original position
   auto *origDivider = new wxStaticLine(panel, wxID_ANY);
   intervalSizer->Add(origDivider, 0, wxEXPAND | wxLEFT | wxRIGHT | wxTOP | wxBOTTOM, 8);
 
-  // Original position controls
-  auto *origGrid = new wxFlexGridSizer(1, 4, 10, 10);
-  auto *lblOriginalX = new wxStaticText(panel, wxID_ANY, "Original X:");
+  auto *origTitle = new wxStaticText(panel, wxID_ANY, "Original");
+  intervalSizer->Add(origTitle, 0, wxLEFT, 8);
+  auto *origGrid = new wxFlexGridSizer(2, 4, 10, 10);
+  auto *lblOriginalX = new wxStaticText(panel, wxID_ANY, "X");
   originalXCtrl = new wxTextCtrl(panel, wxID_ANY, "0");
-  auto *lblOriginalY = new wxStaticText(panel, wxID_ANY, "Original Y:");
+  auto *lblOriginalY = new wxStaticText(panel, wxID_ANY, "Y");
   originalYCtrl = new wxTextCtrl(panel, wxID_ANY, "0");
   origGrid->Add(lblOriginalX, 0, wxALIGN_CENTER_VERTICAL | wxRIGHT, 2);
   origGrid->Add(originalXCtrl, 1, wxEXPAND | wxRIGHT, 8);
@@ -127,10 +121,12 @@ MyFrame::MyFrame() : wxFrame(nullptr, wxID_ANY, "Not Illegal Autoclicker", wxDef
   intervalSizer->Add(divider, 0, wxEXPAND | wxLEFT | wxRIGHT | wxTOP | wxBOTTOM, 8);
 
   // Target controls
+  auto *targetTitle = new wxStaticText(panel, wxID_ANY, "Target");
+  intervalSizer->Add(targetTitle, 0, wxLEFT, 8);
   auto *targetGrid = new wxFlexGridSizer(1, 4, 10, 10);
-  auto *lblTargetX = new wxStaticText(panel, wxID_ANY, "Target X:");
+  auto *lblTargetX = new wxStaticText(panel, wxID_ANY, "X");
   targetXCtrl = new wxTextCtrl(panel, wxID_ANY, "0");
-  auto *lblTargetY = new wxStaticText(panel, wxID_ANY, "Target Y:");
+  auto *lblTargetY = new wxStaticText(panel, wxID_ANY, "Y");
   targetYCtrl = new wxTextCtrl(panel, wxID_ANY, "0");
   targetGrid->Add(lblTargetX, 0, wxALIGN_CENTER_VERTICAL | wxRIGHT, 2);
   targetGrid->Add(targetXCtrl, 1, wxEXPAND | wxRIGHT, 8);
@@ -139,6 +135,10 @@ MyFrame::MyFrame() : wxFrame(nullptr, wxID_ANY, "Not Illegal Autoclicker", wxDef
   targetGrid->AddGrowableCol(1, 1);
   targetGrid->AddGrowableCol(3, 1);
   intervalSizer->Add(targetGrid, 0, wxALL | wxEXPAND, 8);
+  auto *cursorPosTitle = new wxStaticText(panel, wxID_ANY, "Current Cursor Position");
+  cursorPosLabel = new wxStaticText(panel, wxID_ANY, "X: --  Y: --");
+  intervalSizer->Add(cursorPosTitle, 0, wxALL | wxEXPAND, 8);
+  intervalSizer->Add(cursorPosLabel, 0, wxALL | wxEXPAND, 8);
 
   // Add random offset slider and label (ms)
   auto *offsetSizer = new wxBoxSizer(wxHORIZONTAL);
