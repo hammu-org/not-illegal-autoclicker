@@ -27,7 +27,7 @@ private:
   wxStaticText *offsetLabel;
   wxSlider *offsetSlider;
   wxStaticText *cursorPosLabel; // New label for cursor position
-  bool isClicking = false;
+  std::atomic<bool> isClicking{false};
   int randomOffsetMs = 200;
 };
 
@@ -251,7 +251,7 @@ void MyFrame::StartClickLoop()
       if (stopDuration < 1) stopDuration = 120000; // fallback to 2 min
       auto startTime = std::chrono::steady_clock::now();
 
-      // Setup randomizer for ±user-selected offset in ms
+      // Setup randomizer for 7user-selected offset in ms
       std::random_device rd;
       std::mt19937 gen(rd());
       int offsetRange = randomOffsetMs;
@@ -272,8 +272,8 @@ void MyFrame::StartClickLoop()
         targetXCtrl->GetValue().ToLong(&targetX);
         targetYCtrl->GetValue().ToLong(&targetY);
 
-        // Move from original to target
-        moveMouseSmooth(static_cast<int>(origX), static_cast<int>(origY), static_cast<int>(targetX), static_cast<int>(targetY));
+        // Move from original to target, aborts if isClicking is set false
+        moveMouseSmooth(static_cast<int>(origX), static_cast<int>(origY), static_cast<int>(targetX), static_cast<int>(targetY), &isClicking);
 
         // Ensure mouse is at target before clicking
         wxTheApp->CallAfter([this, targetX, targetY]() {
@@ -286,7 +286,7 @@ void MyFrame::StartClickLoop()
         wxMilliSleep(randomized);
 
         // Optionally, move back to original (if you want a round-trip loop)
-        // moveMouseSmooth(static_cast<int>(targetX), static_cast<int>(targetY), static_cast<int>(origX), static_cast<int>(origY));
+        // moveMouseSmooth(static_cast<int>(targetX), static_cast<int>(targetY), static_cast<int>(origX), static_cast<int>(origY), &isClicking);
       }
       wxTheApp->CallAfter([this]() {
         isClicking = false;

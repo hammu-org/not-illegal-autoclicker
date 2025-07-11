@@ -1,6 +1,6 @@
 #include "move.hpp"
 
-void moveMouseSmooth(int startX, int startY, int endX, int endY)
+void moveMouseSmooth(int startX, int startY, int endX, int endY, std::atomic<bool> *stopFlag)
 {
   // Acceptable ranges for human-like movement
   int minSteps = 100, maxSteps = 150;
@@ -33,6 +33,8 @@ void moveMouseSmooth(int startX, int startY, int endX, int endY)
   int x = startX, y = startY;
   for (int i = 1; i <= steps; ++i)
   {
+    if (stopFlag && !(*stopFlag))
+      break;
     x = static_cast<int>(startX + dx * i);
     y = static_cast<int>(startY + dy * i);
 
