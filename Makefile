@@ -55,13 +55,12 @@ ifeq ($(OS),Windows_NT)
 	EXE_EXT := .exe
 	THREAD_FLAG := -pthread
 else
-	CXX := clang++
+	CXX := clang++ -framework ApplicationServices
 	RM := rm -rf
 	MKDIR := mkdir -p $(BUILD_DIR)
 	EXE_EXT :=
 	THREAD_FLAG := -pthread
 endif
-
 
 # ---- Project settings ----
 TARGET := not_illegal_autoclicker$(EXE_EXT)
