@@ -13,7 +13,6 @@ CYAN   := \x1b[0;36m
 PURPLE := \x1b[0;35m
 RESET  := \x1b[0m
 
-
 # ---- Fancy icons ----
 ifeq ($(OS),Windows_NT)
 	CHECK  := [OK]
@@ -46,33 +45,49 @@ MSG_LINK   := $(BOLD)$(GREEN)$(LINK)$(RESET)$(GREEN)
 MSG_OK     := $(BOLD)$(GREEN)$(CHECK)$(RESET)$(GREEN)
 MSG_REBUILD:= $(BOLD)$(CYAN)$(RECYCLE)$(RESET)$(CYAN)
 
-
-# ---- OS Detection ----
+# ---- OS Detection and wxWidgets Setup ----
 ifeq ($(OS),Windows_NT)
 	CXX := g++
 	RM := rm -rf
 	MKDIR := if not exist $(BUILD_DIR) mkdir $(BUILD_DIR)
 	EXE_EXT := .exe
 	THREAD_FLAG := -pthread
+
+	# ---- wxWidgets Prebuilt Binaries Setup (adjust as needed) ----
+	WXWIN ?= C:/wxWidgets
+	WX_LIBFOLDER := gcc
+
+	WX_INCLUDE := -I$(WXWIN)/include -I$(WXWIN)/lib/$(WX_LIBFOLDER)/mswu
+	WX_LIBS := -L$(WXWIN)/lib/$(WX_LIBFOLDER) \
+		-lwxmsw32u_core \
+		-lwxbase32u \
+		-lwxpng \
+		-lwxzlib \
+		-lwxregexu \
+		-lwxexpat \
+		-lcomctl32 -lole32 -luuid -lwinmm -lwsock32
+
+	CXXFLAGS += $(WX_INCLUDE)
+	LDFLAGS  += $(WX_LIBS)
 else
 	CXX := clang++ -framework ApplicationServices
 	RM := rm -rf
 	MKDIR := mkdir -p $(BUILD_DIR)
 	EXE_EXT :=
 	THREAD_FLAG := -pthread
-endif
 
-WX_CXXFLAGS := $(shell wx-config --cxxflags)
-WX_LDFLAGS  := $(shell wx-config --libs)
+	WX_CXXFLAGS := $(shell wx-config --cxxflags)
+	WX_LDFLAGS  := $(shell wx-config --libs)
+	CXXFLAGS += $(WX_CXXFLAGS)
+	LDFLAGS  += $(WX_LDFLAGS)
+endif
 
 # ---- Project settings ----
 TARGET := not_illegal_autoclicker$(EXE_EXT)
 SRC_DIR := bot
 BUILD_DIR := build
 
-# Add thread flag for both compile and link
-CXXFLAGS := -std=c++17 -Wall -Wextra $(THREAD_FLAG) $(WX_CXXFLAGS)
-LDFLAGS  += $(WX_LDFLAGS)
+CXXFLAGS += -std=c++17 -Wall -Wextra $(THREAD_FLAG)
 
 # ---- Source and object files ----
 SRCS := $(wildcard $(SRC_DIR)/*.cpp)
