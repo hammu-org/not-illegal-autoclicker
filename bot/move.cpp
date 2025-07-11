@@ -3,8 +3,8 @@
 void moveMouseSmooth(int startX, int startY, int endX, int endY)
 {
   // Acceptable ranges for human-like movement
-  int minSteps = 30, maxSteps = 100;
-  int minDuration = 400, maxDuration = 1000; // milliseconds
+  int minSteps = 100, maxSteps = 150;
+  int minDuration = 200, maxDuration = 400; // milliseconds
 
   static std::random_device rd;
   static std::mt19937 rng(rd());
