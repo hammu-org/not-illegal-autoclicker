@@ -27,6 +27,7 @@ Here's a restructured and more readable version of your ROADMAP.md:
 
 - **Original Location:**  
   - Pick Location: X `[  ]`, Y `[  ]`
+   - [ ] Figure out where the mouse is
 - **Click Location:**  
   - Pick Location: X `[  ]`, Y `[  ]`
 
