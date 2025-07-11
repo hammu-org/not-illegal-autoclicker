@@ -1,5 +1,6 @@
 #include <wx/wx.h>
 #include <wx/event.h>
+#include <wx/statline.h>
 #include "move.hpp"
 
 class MyFrame : public wxFrame
@@ -7,86 +8,42 @@ class MyFrame : public wxFrame
 public:
   enum
   {
-    ID_HOTKEY_F12 = wxID_HIGHEST + 1,
-    ID_HOTKEY_F10
+    ID_HOTKEY_F10 = wxID_HIGHEST + 1
   };
   MyFrame();
-  void OnStartMoveLoop(wxCommandEvent &);
-  void OnStopMoveLoop(wxCommandEvent &);
-  void OnMoveTimer(wxTimerEvent &);
   void OnClick(wxCommandEvent &);
-  void OnF12Hotkey(wxKeyEvent &);
   void OnF10Hotkey(wxKeyEvent &);
   void OnClose(wxCloseEvent &event);
   void StartClickLoop();
   void StopClickLoop();
 
 private:
-  wxTextCtrl *startXCtrl, *startYCtrl, *endXCtrl, *endYCtrl;
   wxTextCtrl *intervalMinCtrl, *intervalSecCtrl, *intervalMsCtrl;
-  wxStaticText *moveStatusLabel;
+  wxTextCtrl *originalXCtrl, *originalYCtrl;
+  wxTextCtrl *targetXCtrl, *targetYCtrl;
   wxStaticText *clickStatusLabel;
   wxStaticText *offsetLabel;
   wxSlider *offsetSlider;
-  wxTimer moveTimer;
-  bool isMoving = false;
   bool isClicking = false;
   int randomOffsetMs = 200;
 };
 
-MyFrame::MyFrame() : wxFrame(nullptr, wxID_ANY, "Autoclicker GUI", wxDefaultPosition, wxSize(500, 500)), moveTimer(this)
+MyFrame::MyFrame() : wxFrame(nullptr, wxID_ANY, "Autoclicker GUI", wxDefaultPosition, wxSize(500, 500))
 {
   auto *panel = new wxPanel(this);
   auto *mainSizer = new wxBoxSizer(wxVERTICAL);
 
-  startXCtrl = new wxTextCtrl(panel, wxID_ANY, "0");
-  startYCtrl = new wxTextCtrl(panel, wxID_ANY, "0");
-  endXCtrl = new wxTextCtrl(panel, wxID_ANY, "0");
-  endYCtrl = new wxTextCtrl(panel, wxID_ANY, "0");
   intervalMinCtrl = new wxTextCtrl(panel, wxID_ANY, "0");
   intervalSecCtrl = new wxTextCtrl(panel, wxID_ANY, "0");
   intervalMsCtrl = new wxTextCtrl(panel, wxID_ANY, "0");
 
   wxFont fontBold(10, wxFONTFAMILY_DEFAULT, wxFONTSTYLE_NORMAL, wxFONTWEIGHT_BOLD);
 
-  // Group: Mouse Movement (top)
-  auto *moveBox = new wxStaticBox(panel, wxID_ANY, "Mouse Movement");
-  auto *moveSizer = new wxStaticBoxSizer(moveBox, wxVERTICAL);
-  auto *moveGrid = new wxFlexGridSizer(2, 4, 12, 12); // 2 rows, 4 cols, more spacing
-  auto *lblStartX = new wxStaticText(panel, wxID_ANY, "Start X:");
-  lblStartX->SetFont(fontBold);
-  auto *lblStartY = new wxStaticText(panel, wxID_ANY, "Start Y:");
-  lblStartY->SetFont(fontBold);
-  auto *lblEndX = new wxStaticText(panel, wxID_ANY, "End X:");
-  lblEndX->SetFont(fontBold);
-  auto *lblEndY = new wxStaticText(panel, wxID_ANY, "End Y:");
-  lblEndY->SetFont(fontBold);
-  moveGrid->Add(lblStartX, 0, wxALIGN_CENTER_VERTICAL | wxRIGHT, 4);
-  moveGrid->Add(startXCtrl, 1, wxEXPAND | wxRIGHT, 12);
-  moveGrid->Add(lblEndX, 0, wxALIGN_CENTER_VERTICAL | wxRIGHT, 4);
-  moveGrid->Add(endXCtrl, 1, wxEXPAND);
-  moveGrid->Add(lblStartY, 0, wxALIGN_CENTER_VERTICAL | wxRIGHT, 4);
-  moveGrid->Add(startYCtrl, 1, wxEXPAND | wxRIGHT, 12);
-  moveGrid->Add(lblEndY, 0, wxALIGN_CENTER_VERTICAL | wxRIGHT, 4);
-  moveGrid->Add(endYCtrl, 1, wxEXPAND);
-  moveGrid->AddGrowableCol(1);
-  moveGrid->AddGrowableCol(3);
-  moveSizer->Add(moveGrid, 1, wxALL | wxEXPAND, 12);
-  moveStatusLabel = new wxStaticText(panel, wxID_ANY, "Status: Idle");
-  wxFont statusFont = fontBold;
-  statusFont.SetPointSize(11);
-  moveStatusLabel->SetFont(statusFont);
-  moveSizer->Add(moveStatusLabel, 0, wxALL | wxEXPAND, 6);
-  auto *moveHotkeyLabel = new wxStaticText(panel, wxID_ANY, "Hotkey: F12 to Start/Stop Movement");
-  wxFont moveHotkeyFont = fontBold;
-  moveHotkeyFont.SetPointSize(9);
-  moveHotkeyLabel->SetFont(moveHotkeyFont);
-  moveSizer->Add(moveHotkeyLabel, 0, wxLEFT | wxRIGHT | wxBOTTOM, 6);
-  mainSizer->Add(moveSizer, 0, wxALL | wxEXPAND, 16);
-
-  // Group: Click Interval (bottom)
+  // Group: Click Interval
   auto *intervalBox = new wxStaticBox(panel, wxID_ANY, "Click Interval");
   auto *intervalSizer = new wxStaticBoxSizer(intervalBox, wxVERTICAL);
+
+  // Interval controls
   auto *intervalGrid = new wxFlexGridSizer(1, 6, 10, 10);
   auto *lblMin = new wxStaticText(panel, wxID_ANY, "Min:");
   lblMin->SetFont(fontBold);
@@ -103,7 +60,47 @@ MyFrame::MyFrame() : wxFrame(nullptr, wxID_ANY, "Autoclicker GUI", wxDefaultPosi
   intervalGrid->AddGrowableCol(1, 1);
   intervalGrid->AddGrowableCol(3, 1);
   intervalGrid->AddGrowableCol(5, 1);
-  intervalSizer->Add(intervalGrid, 0, wxALL | wxEXPAND, 12);
+  intervalSizer->Add(intervalGrid, 0, wxALL | wxEXPAND, 8);
+
+  // Divider before original position
+  auto *origDivider = new wxStaticLine(panel, wxID_ANY);
+  intervalSizer->Add(origDivider, 0, wxEXPAND | wxLEFT | wxRIGHT | wxTOP | wxBOTTOM, 8);
+
+  // Original position controls
+  auto *origGrid = new wxFlexGridSizer(1, 4, 10, 10);
+  auto *lblOriginalX = new wxStaticText(panel, wxID_ANY, "Original X:");
+  lblOriginalX->SetFont(fontBold);
+  originalXCtrl = new wxTextCtrl(panel, wxID_ANY, "0");
+  auto *lblOriginalY = new wxStaticText(panel, wxID_ANY, "Original Y:");
+  lblOriginalY->SetFont(fontBold);
+  originalYCtrl = new wxTextCtrl(panel, wxID_ANY, "0");
+  origGrid->Add(lblOriginalX, 0, wxALIGN_CENTER_VERTICAL | wxRIGHT, 2);
+  origGrid->Add(originalXCtrl, 1, wxEXPAND | wxRIGHT, 8);
+  origGrid->Add(lblOriginalY, 0, wxALIGN_CENTER_VERTICAL | wxRIGHT, 2);
+  origGrid->Add(originalYCtrl, 1, wxEXPAND | wxRIGHT, 8);
+  origGrid->AddGrowableCol(1, 1);
+  origGrid->AddGrowableCol(3, 1);
+  intervalSizer->Add(origGrid, 0, wxALL | wxEXPAND, 8);
+
+  // Divider before target position
+  auto *divider = new wxStaticLine(panel, wxID_ANY);
+  intervalSizer->Add(divider, 0, wxEXPAND | wxLEFT | wxRIGHT | wxTOP | wxBOTTOM, 8);
+
+  // Target controls
+  auto *targetGrid = new wxFlexGridSizer(1, 4, 10, 10);
+  auto *lblTargetX = new wxStaticText(panel, wxID_ANY, "Target X:");
+  lblTargetX->SetFont(fontBold);
+  targetXCtrl = new wxTextCtrl(panel, wxID_ANY, "0");
+  auto *lblTargetY = new wxStaticText(panel, wxID_ANY, "Target Y:");
+  lblTargetY->SetFont(fontBold);
+  targetYCtrl = new wxTextCtrl(panel, wxID_ANY, "0");
+  targetGrid->Add(lblTargetX, 0, wxALIGN_CENTER_VERTICAL | wxRIGHT, 2);
+  targetGrid->Add(targetXCtrl, 1, wxEXPAND | wxRIGHT, 8);
+  targetGrid->Add(lblTargetY, 0, wxALIGN_CENTER_VERTICAL | wxRIGHT, 2);
+  targetGrid->Add(targetYCtrl, 1, wxEXPAND | wxRIGHT, 8);
+  targetGrid->AddGrowableCol(1, 1);
+  targetGrid->AddGrowableCol(3, 1);
+  intervalSizer->Add(targetGrid, 0, wxALL | wxEXPAND, 8);
 
   // Add random offset slider and label (ms)
   auto *offsetSizer = new wxBoxSizer(wxHORIZONTAL);
@@ -137,46 +134,9 @@ MyFrame::MyFrame() : wxFrame(nullptr, wxID_ANY, "Autoclicker GUI", wxDefaultPosi
 
   panel->SetSizer(mainSizer);
 
-  Bind(wxEVT_TIMER, &MyFrame::OnMoveTimer, this);
-
-  // Register F12 as a hotkey
-  RegisterHotKey(ID_HOTKEY_F12, wxMOD_NONE, WXK_F12);
   RegisterHotKey(ID_HOTKEY_F10, wxMOD_NONE, WXK_F10);
-  Bind(wxEVT_HOTKEY, &MyFrame::OnF12Hotkey, this, ID_HOTKEY_F12);
   Bind(wxEVT_HOTKEY, &MyFrame::OnF10Hotkey, this, ID_HOTKEY_F10);
   Bind(wxEVT_CLOSE_WINDOW, &MyFrame::OnClose, this);
-}
-
-void MyFrame::OnStartMoveLoop(wxCommandEvent &)
-{
-  if (!isMoving)
-  {
-    isMoving = true;
-    moveStatusLabel->SetLabel("Status: Movement Started");
-    moveTimer.Start(1000);
-  }
-}
-
-void MyFrame::OnStopMoveLoop(wxCommandEvent &)
-{
-  if (isMoving)
-  {
-    isMoving = false;
-    moveStatusLabel->SetLabel("Status: Idle");
-    moveTimer.Stop();
-  }
-}
-
-void MyFrame::OnMoveTimer(wxTimerEvent &)
-{
-  if (!isMoving)
-    return;
-  long startX, startY, endX, endY;
-  startXCtrl->GetValue().ToLong(&startX);
-  startYCtrl->GetValue().ToLong(&startY);
-  endXCtrl->GetValue().ToLong(&endX);
-  endYCtrl->GetValue().ToLong(&endY);
-  moveMouseSmooth(static_cast<int>(startX), static_cast<int>(startY), static_cast<int>(endX), static_cast<int>(endY));
 }
 
 void MyFrame::OnClick(wxCommandEvent &)
@@ -184,7 +144,6 @@ void MyFrame::OnClick(wxCommandEvent &)
   StartClickLoop();
 }
 
-// performClickLoop is now handled in StartClickLoop
 void MyFrame::OnF10Hotkey(wxKeyEvent &)
 {
   if (isClicking)
@@ -199,6 +158,7 @@ void MyFrame::StartClickLoop()
   {
     isClicking = true;
     clickStatusLabel->SetLabel("Click Status: Clicking...");
+
     // Start click loop in a new thread to avoid blocking UI
     std::thread([this]()
                 {
@@ -236,19 +196,8 @@ void MyFrame::StopClickLoop()
   clickStatusLabel->SetLabel("Click Status: Idle");
 }
 
-void MyFrame::OnF12Hotkey(wxKeyEvent &)
-{
-  // Toggle movement loop
-  wxCommandEvent dummyEvt;
-  if (isMoving)
-    OnStopMoveLoop(dummyEvt);
-  else
-    OnStartMoveLoop(dummyEvt);
-}
-
 void MyFrame::OnClose(wxCloseEvent &event)
 {
-  UnregisterHotKey(MyFrame::ID_HOTKEY_F12);
   UnregisterHotKey(MyFrame::ID_HOTKEY_F10);
   event.Skip();
 }
