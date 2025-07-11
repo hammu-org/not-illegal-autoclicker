@@ -2,6 +2,7 @@
 #include <wx/event.h>
 #include <wx/statline.h>
 #include "move.hpp"
+#define MIN_WIDTH_COL 60
 
 class MyFrame : public wxFrame
 {
@@ -31,9 +32,9 @@ private:
   int randomOffsetMs = 200;
 };
 
-MyFrame::MyFrame() : wxFrame(nullptr, wxID_ANY, "Not Illegal Autoclicker", wxDefaultPosition, wxSize(700, 600))
+MyFrame::MyFrame() : wxFrame(nullptr, wxID_ANY, "Not Illegal Autoclicker", wxDefaultPosition, wxSize(600, 600))
 {
-  SetMinSize(wxSize(700, 600));
+  SetMinSize(wxSize(600, 600));
   auto *panel = new wxPanel(this);
   auto *mainSizer = new wxBoxSizer(wxVERTICAL);
 
@@ -60,18 +61,18 @@ MyFrame::MyFrame() : wxFrame(nullptr, wxID_ANY, "Not Illegal Autoclicker", wxDef
   auto *lblMin = new wxStaticText(panel, wxID_ANY, "mins");
   auto *lblSec = new wxStaticText(panel, wxID_ANY, "secs");
   auto *lblMs = new wxStaticText(panel, wxID_ANY, "milliseconds");
-  intervalGrid->Add(intervalHourCtrl, 1, wxEXPAND | wxRIGHT, 8);
+  intervalHourCtrl->SetMinSize(wxSize(MIN_WIDTH_COL, -1));
+  intervalMinCtrl->SetMinSize(wxSize(MIN_WIDTH_COL, -1));
+  intervalSecCtrl->SetMinSize(wxSize(MIN_WIDTH_COL, -1));
+  intervalMsCtrl->SetMinSize(wxSize(MIN_WIDTH_COL, -1));
+  intervalGrid->Add(intervalHourCtrl, 1, wxRIGHT, 8);
   intervalGrid->Add(lblHour, 0, wxALIGN_CENTER_VERTICAL | wxRIGHT, 2);
-  intervalGrid->Add(intervalMinCtrl, 1, wxEXPAND | wxRIGHT, 8);
+  intervalGrid->Add(intervalMinCtrl, 1, wxRIGHT, 8);
   intervalGrid->Add(lblMin, 0, wxALIGN_CENTER_VERTICAL | wxRIGHT, 2);
-  intervalGrid->Add(intervalSecCtrl, 1, wxEXPAND | wxRIGHT, 8);
+  intervalGrid->Add(intervalSecCtrl, 1, wxRIGHT, 8);
   intervalGrid->Add(lblSec, 0, wxALIGN_CENTER_VERTICAL | wxRIGHT, 2);
-  intervalGrid->Add(intervalMsCtrl, 1, wxEXPAND);
+  intervalGrid->Add(intervalMsCtrl, 1, wxRIGHT, 2);
   intervalGrid->Add(lblMs, 0, wxALIGN_CENTER_VERTICAL | wxRIGHT, 2);
-  intervalGrid->AddGrowableCol(0, 1);
-  intervalGrid->AddGrowableCol(2, 1);
-  intervalGrid->AddGrowableCol(4, 1);
-  intervalGrid->AddGrowableCol(6, 1);
   intervalSizer->Add(intervalGrid, 0, wxALL | wxEXPAND, 8);
 
   // Emergency stop controls UI
@@ -82,18 +83,20 @@ MyFrame::MyFrame() : wxFrame(nullptr, wxID_ANY, "Not Illegal Autoclicker", wxDef
   auto *lblStopMin = new wxStaticText(panel, wxID_ANY, "mins");
   auto *lblStopSec = new wxStaticText(panel, wxID_ANY, "secs");
   auto *lblStopMs = new wxStaticText(panel, wxID_ANY, "milliseconds");
-  stopGrid->Add(stopHourCtrl, 1, wxEXPAND | wxRIGHT, 8);
+  // Set minimum width for controls instead of wxEXPAND
+  stopHourCtrl->SetMinSize(wxSize(MIN_WIDTH_COL, -1));
+  stopMinCtrl->SetMinSize(wxSize(MIN_WIDTH_COL, -1));
+  stopSecCtrl->SetMinSize(wxSize(MIN_WIDTH_COL, -1));
+  stopMsCtrl->SetMinSize(wxSize(MIN_WIDTH_COL, -1));
+
+  stopGrid->Add(stopHourCtrl, 1, wxRIGHT, 8);
   stopGrid->Add(lblStopHour, 0, wxALIGN_CENTER_VERTICAL | wxRIGHT, 2);
-  stopGrid->Add(stopMinCtrl, 1, wxEXPAND | wxRIGHT, 8);
+  stopGrid->Add(stopMinCtrl, 1, wxRIGHT, 8);
   stopGrid->Add(lblStopMin, 0, wxALIGN_CENTER_VERTICAL | wxRIGHT, 2);
-  stopGrid->Add(stopSecCtrl, 1, wxEXPAND | wxRIGHT, 8);
+  stopGrid->Add(stopSecCtrl, 1, wxRIGHT, 8);
   stopGrid->Add(lblStopSec, 0, wxALIGN_CENTER_VERTICAL | wxRIGHT, 2);
-  stopGrid->Add(stopMsCtrl, 1, wxEXPAND);
+  stopGrid->Add(stopMsCtrl, 1, wxRIGHT, 2);
   stopGrid->Add(lblStopMs, 0, wxALIGN_CENTER_VERTICAL | wxRIGHT, 2);
-  stopGrid->AddGrowableCol(0, 1);
-  stopGrid->AddGrowableCol(2, 1);
-  stopGrid->AddGrowableCol(4, 1);
-  stopGrid->AddGrowableCol(6, 1);
   stopSizer->Add(stopGrid, 0, wxALL | wxEXPAND, 8);
   mainSizer->Add(stopSizer, 0, wxALL | wxEXPAND, 16);
 
@@ -108,17 +111,13 @@ MyFrame::MyFrame() : wxFrame(nullptr, wxID_ANY, "Not Illegal Autoclicker", wxDef
   originalXCtrl = new wxTextCtrl(panel, wxID_ANY, "0");
   auto *lblOriginalY = new wxStaticText(panel, wxID_ANY, "Y");
   originalYCtrl = new wxTextCtrl(panel, wxID_ANY, "0");
+  originalXCtrl->SetMinSize(wxSize(MIN_WIDTH_COL, -1));
+  originalYCtrl->SetMinSize(wxSize(MIN_WIDTH_COL, -1));
   origGrid->Add(lblOriginalX, 0, wxALIGN_CENTER_VERTICAL | wxRIGHT, 2);
-  origGrid->Add(originalXCtrl, 1, wxEXPAND | wxRIGHT, 8);
+  origGrid->Add(originalXCtrl, 1, wxALIGN_CENTER_VERTICAL | wxRIGHT, 8);
   origGrid->Add(lblOriginalY, 0, wxALIGN_CENTER_VERTICAL | wxRIGHT, 2);
-  origGrid->Add(originalYCtrl, 1, wxEXPAND | wxRIGHT, 8);
-  origGrid->AddGrowableCol(1, 1);
-  origGrid->AddGrowableCol(3, 1);
+  origGrid->Add(originalYCtrl, 1, wxALIGN_CENTER_VERTICAL | wxRIGHT, 8);
   intervalSizer->Add(origGrid, 0, wxALL | wxEXPAND, 8);
-
-  // Divider before target position
-  auto *divider = new wxStaticLine(panel, wxID_ANY);
-  intervalSizer->Add(divider, 0, wxEXPAND | wxLEFT | wxRIGHT | wxTOP | wxBOTTOM, 8);
 
   // Target controls
   auto *targetTitle = new wxStaticText(panel, wxID_ANY, "Target");
@@ -128,17 +127,21 @@ MyFrame::MyFrame() : wxFrame(nullptr, wxID_ANY, "Not Illegal Autoclicker", wxDef
   targetXCtrl = new wxTextCtrl(panel, wxID_ANY, "0");
   auto *lblTargetY = new wxStaticText(panel, wxID_ANY, "Y");
   targetYCtrl = new wxTextCtrl(panel, wxID_ANY, "0");
+  targetXCtrl->SetMinSize(wxSize(MIN_WIDTH_COL, -1));
+  targetYCtrl->SetMinSize(wxSize(MIN_WIDTH_COL, -1));
   targetGrid->Add(lblTargetX, 0, wxALIGN_CENTER_VERTICAL | wxRIGHT, 2);
-  targetGrid->Add(targetXCtrl, 1, wxEXPAND | wxRIGHT, 8);
+  targetGrid->Add(targetXCtrl, 1, wxALIGN_CENTER_VERTICAL | wxRIGHT, 8);
   targetGrid->Add(lblTargetY, 0, wxALIGN_CENTER_VERTICAL | wxRIGHT, 2);
-  targetGrid->Add(targetYCtrl, 1, wxEXPAND | wxRIGHT, 8);
-  targetGrid->AddGrowableCol(1, 1);
-  targetGrid->AddGrowableCol(3, 1);
+  targetGrid->Add(targetYCtrl, 1, wxALIGN_CENTER_VERTICAL | wxRIGHT, 8);
   intervalSizer->Add(targetGrid, 0, wxALL | wxEXPAND, 8);
   auto *cursorPosTitle = new wxStaticText(panel, wxID_ANY, "Current Cursor Position");
   cursorPosLabel = new wxStaticText(panel, wxID_ANY, "X: --  Y: --");
   intervalSizer->Add(cursorPosTitle, 0, wxALL | wxEXPAND, 8);
   intervalSizer->Add(cursorPosLabel, 0, wxALL | wxEXPAND, 8);
+
+  // Divider before target position
+  auto *divider = new wxStaticLine(panel, wxID_ANY);
+  intervalSizer->Add(divider, 0, wxEXPAND | wxLEFT | wxRIGHT | wxTOP | wxBOTTOM, 8);
 
   // Add random offset slider and label (ms)
   auto *offsetSizer = new wxBoxSizer(wxHORIZONTAL);
