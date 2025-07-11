@@ -31,7 +31,7 @@ private:
   int randomOffsetMs = 200;
 };
 
-MyFrame::MyFrame() : wxFrame(nullptr, wxID_ANY, "Autoclicker GUI", wxDefaultPosition, wxSize(500, 600))
+MyFrame::MyFrame() : wxFrame(nullptr, wxID_ANY, "Autoclicker GUI", wxDefaultPosition, wxSize(700, 600))
 {
   auto *panel = new wxPanel(this);
   auto *mainSizer = new wxBoxSizer(wxVERTICAL);
@@ -168,7 +168,13 @@ MyFrame::MyFrame() : wxFrame(nullptr, wxID_ANY, "Autoclicker GUI", wxDefaultPosi
   clickStatusFont.SetPointSize(11);
   clickStatusLabel->SetFont(clickStatusFont);
   intervalSizer->Add(clickStatusLabel, 0, wxALL | wxEXPAND, 6);
-  auto *clickHotkeyLabel = new wxStaticText(panel, wxID_ANY, "Hotkey: F12 to Start/Stop Clicking");
+
+  // Show correct hotkey label depending on platform
+#ifdef __WXMSW__
+  auto *clickHotkeyLabel = new wxStaticText(panel, wxID_ANY, "Hotkey: F13 (Windows) to Start/Stop Clicking");
+#else
+  auto *clickHotkeyLabel = new wxStaticText(panel, wxID_ANY, "Hotkey: F12 (Mac) to Start/Stop Clicking");
+#endif
   wxFont clickHotkeyFont = fontBold;
   clickHotkeyFont.SetPointSize(9);
   clickHotkeyLabel->SetFont(clickHotkeyFont);
@@ -183,7 +189,14 @@ MyFrame::MyFrame() : wxFrame(nullptr, wxID_ANY, "Autoclicker GUI", wxDefaultPosi
 
   panel->SetSizer(mainSizer);
 
+  // Register F13 on Windows, F12 on Mac/others for start/stop clicking
+#ifdef __WXMSW__
+  // On Windows, use VK_F13 (0x7C) and MOD_NOREPEAT
+  RegisterHotKey(ID_HOTKEY_F12, MOD_NOREPEAT, 0x7C);
+#else
+  // On Mac and others, use WXK_F12 and no modifier
   RegisterHotKey(ID_HOTKEY_F12, wxMOD_NONE, WXK_F12);
+#endif
   Bind(wxEVT_HOTKEY, &MyFrame::OnF10Hotkey, this, ID_HOTKEY_F12);
   Bind(wxEVT_CLOSE_WINDOW, &MyFrame::OnClose, this);
 
