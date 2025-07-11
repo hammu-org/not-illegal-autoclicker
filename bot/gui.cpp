@@ -259,18 +259,18 @@ void MyFrame::StartClickLoop()
           isClicking = false;
           break;
         }
-        long origX = 0, origY = 0, targetX = 0, targetY = 0;
-        // originalXCtrl->GetValue().ToLong(&origX);
-        // originalYCtrl->GetValue().ToLong(&origY);
-        Point current = getCurrentMousePos();
-        origX = current.x;
-        origY = current.y;
+        long targetX = 0, targetY = 0;
         targetXCtrl->GetValue().ToLong(&targetX);
         targetYCtrl->GetValue().ToLong(&targetY);
-        
-        // Add random offset to original position
-        origX = randomOffset(origX, 50);
-        origY = randomOffset(origY, 100);
+
+        // Get current mouse position
+        Point current = getCurrentMousePos();
+        int origX = randomOffset(current.x, 5);
+        int origY = randomOffset(current.y, 10);
+
+        // Clamp to screen
+        clampToScreen(origX, origY);
+
         // Move from original to target, aborts if isClicking is set false
         moveMouseSmooth(static_cast<int>(origX), static_cast<int>(origY), static_cast<int>(targetX), static_cast<int>(targetY), &isClicking);
 
