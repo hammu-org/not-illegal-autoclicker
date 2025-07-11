@@ -1,4 +1,5 @@
 #include "move.hpp"
+#include "utils.hpp"
 
 void moveMouseSmooth(int startX, int startY, int endX, int endY, std::atomic<bool> *stopFlag)
 {
@@ -79,8 +80,9 @@ void moveMouseSmoothReturn(int startX, int startY, int endX, int endY, std::atom
   std::uniform_int_distribution<> finalOffsetDist(-maxFinalOffset, maxFinalOffset);
   int offsetX = finalOffsetDist(rng);
   int offsetY = finalOffsetDist(rng);
-  endX += offsetX;
-  endY += offsetY * 55 * (rng() % 2 == 0 ? 1 : -1);
+  endX += offsetX * 20;
+  endY += offsetY * 20 * (rng() % 2 == 0 ? 1 : -1);
+  clampToScreenBleed(endX, endY);
 
   int steps = stepsDist(rng);
   int totalDurationMs = durationDist(rng);
