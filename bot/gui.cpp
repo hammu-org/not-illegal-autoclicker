@@ -56,44 +56,44 @@ MyFrame::MyFrame() : wxFrame(nullptr, wxID_ANY, "Not Illegal Autoclicker", wxDef
 
   // Interval controls
   auto *intervalGrid = new wxFlexGridSizer(1, 8, 10, 10);
-  auto *lblHour = new wxStaticText(panel, wxID_ANY, "hrs");
+  auto *lblHour = new wxStaticText(panel, wxID_ANY, "hours");
   auto *lblMin = new wxStaticText(panel, wxID_ANY, "mins");
   auto *lblSec = new wxStaticText(panel, wxID_ANY, "secs");
   auto *lblMs = new wxStaticText(panel, wxID_ANY, "milliseconds");
-  intervalGrid->Add(lblHour, 0, wxALIGN_CENTER_VERTICAL | wxRIGHT, 2);
   intervalGrid->Add(intervalHourCtrl, 1, wxEXPAND | wxRIGHT, 8);
-  intervalGrid->Add(lblMin, 0, wxALIGN_CENTER_VERTICAL | wxRIGHT, 2);
+  intervalGrid->Add(lblHour, 0, wxALIGN_CENTER_VERTICAL | wxRIGHT, 2);
   intervalGrid->Add(intervalMinCtrl, 1, wxEXPAND | wxRIGHT, 8);
-  intervalGrid->Add(lblSec, 0, wxALIGN_CENTER_VERTICAL | wxRIGHT, 2);
+  intervalGrid->Add(lblMin, 0, wxALIGN_CENTER_VERTICAL | wxRIGHT, 2);
   intervalGrid->Add(intervalSecCtrl, 1, wxEXPAND | wxRIGHT, 8);
-  intervalGrid->Add(lblMs, 0, wxALIGN_CENTER_VERTICAL | wxRIGHT, 2);
+  intervalGrid->Add(lblSec, 0, wxALIGN_CENTER_VERTICAL | wxRIGHT, 2);
   intervalGrid->Add(intervalMsCtrl, 1, wxEXPAND);
-  intervalGrid->AddGrowableCol(1, 1);
-  intervalGrid->AddGrowableCol(3, 1);
-  intervalGrid->AddGrowableCol(5, 1);
-  intervalGrid->AddGrowableCol(7, 1);
+  intervalGrid->Add(lblMs, 0, wxALIGN_CENTER_VERTICAL | wxRIGHT, 2);
+  intervalGrid->AddGrowableCol(0, 1);
+  intervalGrid->AddGrowableCol(2, 1);
+  intervalGrid->AddGrowableCol(4, 1);
+  intervalGrid->AddGrowableCol(6, 1);
   intervalSizer->Add(intervalGrid, 0, wxALL | wxEXPAND, 8);
 
   // Emergency stop controls UI
   auto *stopBox = new wxStaticBox(panel, wxID_ANY, "Emergency Stop (Max Duration)");
   auto *stopSizer = new wxStaticBoxSizer(stopBox, wxVERTICAL);
   auto *stopGrid = new wxFlexGridSizer(1, 8, 10, 10);
-  auto *lblStopHour = new wxStaticText(panel, wxID_ANY, "hrs:");
+  auto *lblStopHour = new wxStaticText(panel, wxID_ANY, "hours");
   auto *lblStopMin = new wxStaticText(panel, wxID_ANY, "mins");
   auto *lblStopSec = new wxStaticText(panel, wxID_ANY, "secs");
   auto *lblStopMs = new wxStaticText(panel, wxID_ANY, "milliseconds");
-  stopGrid->Add(lblStopHour, 0, wxALIGN_CENTER_VERTICAL | wxRIGHT, 2);
   stopGrid->Add(stopHourCtrl, 1, wxEXPAND | wxRIGHT, 8);
-  stopGrid->Add(lblStopMin, 0, wxALIGN_CENTER_VERTICAL | wxRIGHT, 2);
+  stopGrid->Add(lblStopHour, 0, wxALIGN_CENTER_VERTICAL | wxRIGHT, 2);
   stopGrid->Add(stopMinCtrl, 1, wxEXPAND | wxRIGHT, 8);
-  stopGrid->Add(lblStopSec, 0, wxALIGN_CENTER_VERTICAL | wxRIGHT, 2);
+  stopGrid->Add(lblStopMin, 0, wxALIGN_CENTER_VERTICAL | wxRIGHT, 2);
   stopGrid->Add(stopSecCtrl, 1, wxEXPAND | wxRIGHT, 8);
-  stopGrid->Add(lblStopMs, 0, wxALIGN_CENTER_VERTICAL | wxRIGHT, 2);
+  stopGrid->Add(lblStopSec, 0, wxALIGN_CENTER_VERTICAL | wxRIGHT, 2);
   stopGrid->Add(stopMsCtrl, 1, wxEXPAND);
-  stopGrid->AddGrowableCol(1, 1);
-  stopGrid->AddGrowableCol(3, 1);
-  stopGrid->AddGrowableCol(5, 1);
-  stopGrid->AddGrowableCol(7, 1);
+  stopGrid->Add(lblStopMs, 0, wxALIGN_CENTER_VERTICAL | wxRIGHT, 2);
+  stopGrid->AddGrowableCol(0, 1);
+  stopGrid->AddGrowableCol(2, 1);
+  stopGrid->AddGrowableCol(4, 1);
+  stopGrid->AddGrowableCol(6, 1);
   stopSizer->Add(stopGrid, 0, wxALL | wxEXPAND, 8);
   mainSizer->Add(stopSizer, 0, wxALL | wxEXPAND, 16);
 
