@@ -267,7 +267,6 @@ void MyFrame::StartClickLoop()
         Point current = getCurrentMousePos();
         int origX = randomOffset(current.x, 5);
         int origY = randomOffset(current.y, 10);
-
         // Clamp to screen
         clampToScreen(origX, origY);
 
@@ -278,6 +277,7 @@ void MyFrame::StartClickLoop()
         wxTheApp->CallAfter([this, targetX, targetY]() {
           cursorPosLabel->SetLabel(wxString::Format("X: %ld  Y: %ld", targetX, targetY));
         });
+        wxMilliSleep(15);
         leftClick();
 
         moveMouseSmoothReturn(static_cast<int>(targetX), static_cast<int>(targetY), static_cast<int>(origX), static_cast<int>(origY), &isClicking);

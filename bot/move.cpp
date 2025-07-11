@@ -24,7 +24,7 @@ void moveMouseSmooth(int startX, int startY, int endX, int endY, std::atomic<boo
   int totalDurationMs = durationDist(rng);
 
   std::uniform_real_distribution<> wanderChance(0.0, 1.0);
-  std::uniform_int_distribution<> wanderOffset(-2, 2);
+  std::uniform_int_distribution<> wanderOffset(-1, 2);
   std::uniform_int_distribution<> wanderPause(5, 30);
 
   // double dx = (endX - startX) / static_cast<double>(steps);
@@ -81,7 +81,7 @@ void moveMouseSmoothReturn(int startX, int startY, int endX, int endY, std::atom
   int offsetX = finalOffsetDist(rng);
   int offsetY = finalOffsetDist(rng);
   endX += offsetX * 20;
-  endY += offsetY * 20 * (rng() % 2 == 0 ? 1 : -1);
+  endY += offsetY * 30 * (rng() % 2 == 0 ? 1 : -1);
   clampToScreenBleed(endX, endY);
 
   int steps = stepsDist(rng);
