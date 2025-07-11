@@ -63,14 +63,10 @@ MyFrame::MyFrame() : wxFrame(nullptr, wxID_ANY, "Not Illegal Autoclicker", wxDef
 
   // Interval controls
   auto *intervalGrid = new wxFlexGridSizer(1, 8, 10, 10);
-  auto *lblHour = new wxStaticText(panel, wxID_ANY, "Hr:");
-  lblHour->SetFont(fontBold);
-  auto *lblMin = new wxStaticText(panel, wxID_ANY, "Min:");
-  lblMin->SetFont(fontBold);
-  auto *lblSec = new wxStaticText(panel, wxID_ANY, "Sec:");
-  lblSec->SetFont(fontBold);
-  auto *lblMs = new wxStaticText(panel, wxID_ANY, "Ms:");
-  lblMs->SetFont(fontBold);
+  auto *lblHour = new wxStaticText(panel, wxID_ANY, "hrs");
+  auto *lblMin = new wxStaticText(panel, wxID_ANY, "mins");
+  auto *lblSec = new wxStaticText(panel, wxID_ANY, "secs");
+  auto *lblMs = new wxStaticText(panel, wxID_ANY, "milliseconds");
   intervalGrid->Add(lblHour, 0, wxALIGN_CENTER_VERTICAL | wxRIGHT, 2);
   intervalGrid->Add(intervalHourCtrl, 1, wxEXPAND | wxRIGHT, 8);
   intervalGrid->Add(lblMin, 0, wxALIGN_CENTER_VERTICAL | wxRIGHT, 2);
@@ -89,14 +85,10 @@ MyFrame::MyFrame() : wxFrame(nullptr, wxID_ANY, "Not Illegal Autoclicker", wxDef
   auto *stopBox = new wxStaticBox(panel, wxID_ANY, "Emergency Stop (Max Duration)");
   auto *stopSizer = new wxStaticBoxSizer(stopBox, wxVERTICAL);
   auto *stopGrid = new wxFlexGridSizer(1, 8, 10, 10);
-  auto *lblStopHour = new wxStaticText(panel, wxID_ANY, "Hr:");
-  lblStopHour->SetFont(fontBold);
-  auto *lblStopMin = new wxStaticText(panel, wxID_ANY, "Min:");
-  lblStopMin->SetFont(fontBold);
-  auto *lblStopSec = new wxStaticText(panel, wxID_ANY, "Sec:");
-  lblStopSec->SetFont(fontBold);
-  auto *lblStopMs = new wxStaticText(panel, wxID_ANY, "Ms:");
-  lblStopMs->SetFont(fontBold);
+  auto *lblStopHour = new wxStaticText(panel, wxID_ANY, "hrs:");
+  auto *lblStopMin = new wxStaticText(panel, wxID_ANY, "mins");
+  auto *lblStopSec = new wxStaticText(panel, wxID_ANY, "secs");
+  auto *lblStopMs = new wxStaticText(panel, wxID_ANY, "milliseconds");
   stopGrid->Add(lblStopHour, 0, wxALIGN_CENTER_VERTICAL | wxRIGHT, 2);
   stopGrid->Add(stopHourCtrl, 1, wxEXPAND | wxRIGHT, 8);
   stopGrid->Add(lblStopMin, 0, wxALIGN_CENTER_VERTICAL | wxRIGHT, 2);
@@ -119,10 +111,8 @@ MyFrame::MyFrame() : wxFrame(nullptr, wxID_ANY, "Not Illegal Autoclicker", wxDef
   // Original position controls
   auto *origGrid = new wxFlexGridSizer(1, 4, 10, 10);
   auto *lblOriginalX = new wxStaticText(panel, wxID_ANY, "Original X:");
-  lblOriginalX->SetFont(fontBold);
   originalXCtrl = new wxTextCtrl(panel, wxID_ANY, "0");
   auto *lblOriginalY = new wxStaticText(panel, wxID_ANY, "Original Y:");
-  lblOriginalY->SetFont(fontBold);
   originalYCtrl = new wxTextCtrl(panel, wxID_ANY, "0");
   origGrid->Add(lblOriginalX, 0, wxALIGN_CENTER_VERTICAL | wxRIGHT, 2);
   origGrid->Add(originalXCtrl, 1, wxEXPAND | wxRIGHT, 8);
@@ -139,10 +129,8 @@ MyFrame::MyFrame() : wxFrame(nullptr, wxID_ANY, "Not Illegal Autoclicker", wxDef
   // Target controls
   auto *targetGrid = new wxFlexGridSizer(1, 4, 10, 10);
   auto *lblTargetX = new wxStaticText(panel, wxID_ANY, "Target X:");
-  lblTargetX->SetFont(fontBold);
   targetXCtrl = new wxTextCtrl(panel, wxID_ANY, "0");
   auto *lblTargetY = new wxStaticText(panel, wxID_ANY, "Target Y:");
-  lblTargetY->SetFont(fontBold);
   targetYCtrl = new wxTextCtrl(panel, wxID_ANY, "0");
   targetGrid->Add(lblTargetX, 0, wxALIGN_CENTER_VERTICAL | wxRIGHT, 2);
   targetGrid->Add(targetXCtrl, 1, wxEXPAND | wxRIGHT, 8);
