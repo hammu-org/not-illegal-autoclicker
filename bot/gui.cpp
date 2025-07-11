@@ -282,6 +282,8 @@ void MyFrame::StartClickLoop()
         });
         leftClick();
 
+        moveMouseSmooth(static_cast<int>(targetX), static_cast<int>(targetY), static_cast<int>(origX), static_cast<int>(origY), &isClicking);
+
         int randomized = baseInterval + dist(gen);
         if (randomized < 1) randomized = 1;
         wxMilliSleep(randomized);
