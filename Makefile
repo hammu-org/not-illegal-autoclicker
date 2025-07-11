@@ -62,13 +62,17 @@ else
 	THREAD_FLAG := -pthread
 endif
 
+WX_CXXFLAGS := $(shell wx-config --cxxflags)
+WX_LDFLAGS  := $(shell wx-config --libs)
+
 # ---- Project settings ----
 TARGET := not_illegal_autoclicker$(EXE_EXT)
 SRC_DIR := bot
 BUILD_DIR := build
 
 # Add thread flag for both compile and link
-CXXFLAGS := -std=c++17 -Wall -Wextra $(THREAD_FLAG)
+CXXFLAGS := -std=c++17 -Wall -Wextra $(THREAD_FLAG) $(WX_CXXFLAGS)
+LDFLAGS  += $(WX_LDFLAGS)
 
 # ---- Source and object files ----
 SRCS := $(wildcard $(SRC_DIR)/*.cpp)
@@ -82,7 +86,7 @@ all: $(TARGET)
 # ---- Linking ----
 $(TARGET): $(OBJS)
 	@printf '%b\n' "$(MSG_LINK) Linking executable: $(BOLD)$(TARGET)$(RESET)"
-	$(CXX) $(CXXFLAGS) $^ -o $@
+	$(CXX) $(CXXFLAGS) $^ -o $@ $(LDFLAGS)
 
 # ---- Compile user sources ----
 $(BUILD_DIR)/%.o: $(SRC_DIR)/%.cpp | $(BUILD_DIR)

@@ -11,6 +11,14 @@ void moveMouseSmooth(int startX, int startY, int endX, int endY)
   std::uniform_int_distribution<> stepsDist(minSteps, maxSteps);
   std::uniform_int_distribution<> durationDist(minDuration, maxDuration);
 
+  // --- Add random offset to the final destination ---
+  int maxFinalOffset = 10; // e.g., up to ±10 pixels
+  std::uniform_int_distribution<> finalOffsetDist(-maxFinalOffset, maxFinalOffset);
+  int offsetX = finalOffsetDist(rng);
+  int offsetY = finalOffsetDist(rng);
+  endX += offsetX;
+  endY += offsetY;
+
   int steps = stepsDist(rng);
   int totalDurationMs = durationDist(rng);
 
