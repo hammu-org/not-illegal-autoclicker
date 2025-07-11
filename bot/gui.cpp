@@ -2,6 +2,7 @@
 #include <wx/event.h>
 #include <wx/statline.h>
 #include "move.hpp"
+#include "utils.hpp"
 #define MIN_WIDTH_COL 60
 
 class MyFrame : public wxFrame
@@ -146,7 +147,7 @@ MyFrame::MyFrame() : wxFrame(nullptr, wxID_ANY, "Not Illegal Autoclicker", wxDef
   // Add random offset slider and label (ms)
   auto *offsetSizer = new wxBoxSizer(wxHORIZONTAL);
   offsetLabel = new wxStaticText(panel, wxID_ANY, "Random Offset (ms): 200");
-  offsetSlider = new wxSlider(panel, wxID_ANY, 200, 0, 2000, wxDefaultPosition, wxSize(160, -1));
+  offsetSlider = new wxSlider(panel, wxID_ANY, 200, 0, 10000, wxDefaultPosition, wxSize(160, -1));
   offsetSizer->Add(offsetLabel, 0, wxALIGN_CENTER_VERTICAL | wxRIGHT, 8);
   offsetSizer->Add(offsetSlider, 1, wxALIGN_CENTER_VERTICAL);
   intervalSizer->Add(offsetSizer, 0, wxALL | wxEXPAND, 8);
@@ -259,11 +260,17 @@ void MyFrame::StartClickLoop()
           break;
         }
         long origX = 0, origY = 0, targetX = 0, targetY = 0;
-        originalXCtrl->GetValue().ToLong(&origX);
-        originalYCtrl->GetValue().ToLong(&origY);
+        // originalXCtrl->GetValue().ToLong(&origX);
+        // originalYCtrl->GetValue().ToLong(&origY);
+        Point current = getCurrentMousePos();
+        origX = current.x;
+        origY = current.y;
         targetXCtrl->GetValue().ToLong(&targetX);
         targetYCtrl->GetValue().ToLong(&targetY);
-
+        
+        // Add random offset to original position
+        origX = randomOffset(origX, 50);
+        origY = randomOffset(origY, 100);
         // Move from original to target, aborts if isClicking is set false
         moveMouseSmooth(static_cast<int>(origX), static_cast<int>(origY), static_cast<int>(targetX), static_cast<int>(targetY), &isClicking);
 
@@ -273,7 +280,7 @@ void MyFrame::StartClickLoop()
         });
         leftClick();
 
-        moveMouseSmooth(static_cast<int>(targetX), static_cast<int>(targetY), static_cast<int>(origX), static_cast<int>(origY), &isClicking);
+        moveMouseSmoothReturn(static_cast<int>(targetX), static_cast<int>(targetY), static_cast<int>(origX), static_cast<int>(origY), &isClicking);
 
         int randomized = baseInterval + dist(gen);
         if (randomized < 1) randomized = 1;
