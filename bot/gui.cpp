@@ -31,7 +31,7 @@ private:
   int randomOffsetMs = 200;
 };
 
-MyFrame::MyFrame() : wxFrame(nullptr, wxID_ANY, "Autoclicker GUI", wxDefaultPosition, wxSize(700, 600))
+MyFrame::MyFrame() : wxFrame(nullptr, wxID_ANY, "Not Illegal Autoclicker", wxDefaultPosition, wxSize(700, 600))
 {
   auto *panel = new wxPanel(this);
   auto *mainSizer = new wxBoxSizer(wxVERTICAL);
