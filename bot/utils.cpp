@@ -57,6 +57,15 @@ void clampToScreen(int &x, int &y)
     y = std::clamp(y, bounds.top + 1, bounds.bottom - 2);
 }
 
+void clampToScreenBleed(int &x, int &y)
+{
+    ScreenRect bounds = getScreenBounds();
+    const int bleedMarginX = (bounds.right - bounds.left) / 20; // 5% on each side
+    const int bleedMarginY = (bounds.bottom - bounds.top) / 20; // 5% on top/bottom
+    x = std::clamp(x, bounds.left + bleedMarginX, bounds.right - bleedMarginX);
+    y = std::clamp(y, bounds.top + bleedMarginY, bounds.bottom - bleedMarginY);
+}
+
 std::mt19937 rng(std::chrono::steady_clock::now().time_since_epoch().count());
 
 int getRandomInt(int min, int max)
