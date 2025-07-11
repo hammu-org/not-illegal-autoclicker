@@ -8,9 +8,10 @@ class MyFrame : public wxFrame
 public:
   enum
   {
-    ID_HOTKEY_F10 = wxID_HIGHEST + 1
+    ID_HOTKEY_F12 = wxID_HIGHEST + 1
   };
   MyFrame();
+  void OnMouseLeftDown(wxMouseEvent &event);
   void OnClick(wxCommandEvent &);
   void OnF10Hotkey(wxKeyEvent &);
   void OnClose(wxCloseEvent &event);
@@ -24,6 +25,7 @@ private:
   wxStaticText *clickStatusLabel;
   wxStaticText *offsetLabel;
   wxSlider *offsetSlider;
+  wxStaticText *cursorPosLabel; // New label for cursor position
   bool isClicking = false;
   int randomOffsetMs = 200;
 };
@@ -32,6 +34,13 @@ MyFrame::MyFrame() : wxFrame(nullptr, wxID_ANY, "Autoclicker GUI", wxDefaultPosi
 {
   auto *panel = new wxPanel(this);
   auto *mainSizer = new wxBoxSizer(wxVERTICAL);
+
+  // Cursor position display section
+  auto *cursorPosBox = new wxStaticBox(panel, wxID_ANY, "Cursor Position (on Click)");
+  auto *cursorPosSizer = new wxStaticBoxSizer(cursorPosBox, wxVERTICAL);
+  cursorPosLabel = new wxStaticText(panel, wxID_ANY, "X: -  Y: -");
+  cursorPosSizer->Add(cursorPosLabel, 0, wxALL | wxEXPAND, 8);
+  mainSizer->Add(cursorPosSizer, 0, wxALL | wxEXPAND, 16);
 
   intervalMinCtrl = new wxTextCtrl(panel, wxID_ANY, "0");
   intervalSecCtrl = new wxTextCtrl(panel, wxID_ANY, "0");
@@ -119,7 +128,7 @@ MyFrame::MyFrame() : wxFrame(nullptr, wxID_ANY, "Autoclicker GUI", wxDefaultPosi
   clickStatusFont.SetPointSize(11);
   clickStatusLabel->SetFont(clickStatusFont);
   intervalSizer->Add(clickStatusLabel, 0, wxALL | wxEXPAND, 6);
-  auto *clickHotkeyLabel = new wxStaticText(panel, wxID_ANY, "Hotkey: F10 to Start/Stop Clicking");
+  auto *clickHotkeyLabel = new wxStaticText(panel, wxID_ANY, "Hotkey: F12 to Start/Stop Clicking");
   wxFont clickHotkeyFont = fontBold;
   clickHotkeyFont.SetPointSize(9);
   clickHotkeyLabel->SetFont(clickHotkeyFont);
@@ -134,18 +143,27 @@ MyFrame::MyFrame() : wxFrame(nullptr, wxID_ANY, "Autoclicker GUI", wxDefaultPosi
 
   panel->SetSizer(mainSizer);
 
-  RegisterHotKey(ID_HOTKEY_F10, wxMOD_NONE, WXK_F10);
-  Bind(wxEVT_HOTKEY, &MyFrame::OnF10Hotkey, this, ID_HOTKEY_F10);
+  RegisterHotKey(ID_HOTKEY_F12, wxMOD_NONE, WXK_F12);
+  Bind(wxEVT_HOTKEY, &MyFrame::OnF10Hotkey, this, ID_HOTKEY_F12);
   Bind(wxEVT_CLOSE_WINDOW, &MyFrame::OnClose, this);
+
+  // Bind mouse left down event to update cursor position label
+  panel->Bind(wxEVT_LEFT_DOWN, &MyFrame::OnMouseLeftDown, this);
 }
 
 void MyFrame::OnClick(wxCommandEvent &)
 {
+  // Get and display cursor position on click
+  wxPoint pos = wxGetMousePosition();
+  cursorPosLabel->SetLabel(wxString::Format("X: %d  Y: %d", pos.x, pos.y));
   StartClickLoop();
 }
 
 void MyFrame::OnF10Hotkey(wxKeyEvent &)
 {
+  // Get and display cursor position on hotkey
+  wxPoint pos = wxGetMousePosition();
+  cursorPosLabel->SetLabel(wxString::Format("X: %d  Y: %d", pos.x, pos.y));
   if (isClicking)
     StopClickLoop();
   else
@@ -177,7 +195,18 @@ void MyFrame::StartClickLoop()
 
       while (isClicking)
       {
+        long origX = 0, origY = 0, targetX = 0, targetY = 0;
+        originalXCtrl->GetValue().ToLong(&origX);
+        originalYCtrl->GetValue().ToLong(&origY);
+        targetXCtrl->GetValue().ToLong(&targetX);
+        targetYCtrl->GetValue().ToLong(&targetY);
+        moveMouseSmooth(static_cast<int>(origX), static_cast<int>(origY), static_cast<int>(targetX), static_cast<int>(targetY));
         leftClick();
+        // Update cursor position label on every click
+        wxPoint pos = wxGetMousePosition();
+        wxTheApp->CallAfter([this, pos]() {
+          cursorPosLabel->SetLabel(wxString::Format("X: %d  Y: %d", pos.x, pos.y));
+        });
         int randomized = baseInterval + dist(gen);
         if (randomized < 1) randomized = 1;
         wxMilliSleep(randomized);
@@ -198,7 +227,7 @@ void MyFrame::StopClickLoop()
 
 void MyFrame::OnClose(wxCloseEvent &event)
 {
-  UnregisterHotKey(MyFrame::ID_HOTKEY_F10);
+  UnregisterHotKey(MyFrame::ID_HOTKEY_F12);
   event.Skip();
 }
 
@@ -214,3 +243,10 @@ public:
 };
 
 wxIMPLEMENT_APP(MyApp);
+
+void MyFrame::OnMouseLeftDown(wxMouseEvent &event)
+{
+  wxPoint pos = wxGetMousePosition();
+  cursorPosLabel->SetLabel(wxString::Format("X: %d  Y: %d", pos.x, pos.y));
+  event.Skip();
+}
