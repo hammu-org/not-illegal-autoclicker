@@ -201,20 +201,10 @@ void MyFrame::StartClickLoop()
         targetXCtrl->GetValue().ToLong(&targetX);
         targetYCtrl->GetValue().ToLong(&targetY);
 
-
         // Move from original to target
         moveMouseSmooth(static_cast<int>(origX), static_cast<int>(origY), static_cast<int>(targetX), static_cast<int>(targetY));
 
-        // Wait until the mouse is at (or very near) the target before clicking
-        int waitCount = 0;
-        const int maxWait = 100; // up to 1 second (10ms * 100)
-        while (waitCount < maxWait) {
-          wxPoint pos = wxGetMousePosition();
-          if (std::abs(pos.x - targetX) <= 2 && std::abs(pos.y - targetY) <= 2) break;
-          std::this_thread::sleep_for(std::chrono::milliseconds(10));
-          ++waitCount;
-        }
-
+        // Ensure mouse is at target before clicking
         wxTheApp->CallAfter([this, targetX, targetY]() {
           cursorPosLabel->SetLabel(wxString::Format("X: %ld  Y: %ld", targetX, targetY));
         });
