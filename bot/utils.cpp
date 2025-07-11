@@ -29,6 +29,34 @@ Point getCurrentMousePos()
 #endif
 }
 
+ScreenRect getScreenBounds()
+{
+#ifdef _WIN32
+    RECT r;
+    GetClientRect(GetDesktopWindow(), &r);
+    return {r.left, r.top, r.right, r.bottom};
+
+#elif defined(__APPLE__)
+    auto mainDisplay = CGMainDisplayID();
+    CGRect bounds = CGDisplayBounds(mainDisplay);
+    return {
+        static_cast<int>(bounds.origin.x),
+        static_cast<int>(bounds.origin.y),
+        static_cast<int>(bounds.origin.x + bounds.size.width),
+        static_cast<int>(bounds.origin.y + bounds.size.height)};
+
+#else
+    return {0, 0, 1920, 1080}; // fallback
+#endif
+}
+
+void clampToScreen(int &x, int &y)
+{
+    ScreenRect bounds = getScreenBounds();
+    x = std::clamp(x, bounds.left + 1, bounds.right - 2);
+    y = std::clamp(y, bounds.top + 1, bounds.bottom - 2);
+}
+
 std::mt19937 rng(std::chrono::steady_clock::now().time_since_epoch().count());
 
 int getRandomInt(int min, int max)
