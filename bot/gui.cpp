@@ -147,7 +147,7 @@ MyFrame::MyFrame() : wxFrame(nullptr, wxID_ANY, "Not Illegal Autoclicker", wxDef
   // Add random offset slider and label (ms)
   auto *offsetSizer = new wxBoxSizer(wxHORIZONTAL);
   offsetLabel = new wxStaticText(panel, wxID_ANY, "Random Offset (ms): 200");
-  offsetSlider = new wxSlider(panel, wxID_ANY, 200, 0, 10000, wxDefaultPosition, wxSize(160, -1));
+  offsetSlider = new wxSlider(panel, wxID_ANY, 200, 0, 20000, wxDefaultPosition, wxSize(160, -1));
   offsetSizer->Add(offsetLabel, 0, wxALIGN_CENTER_VERTICAL | wxRIGHT, 8);
   offsetSizer->Add(offsetSlider, 1, wxALIGN_CENTER_VERTICAL);
   intervalSizer->Add(offsetSizer, 0, wxALL | wxEXPAND, 8);
@@ -265,8 +265,10 @@ void MyFrame::StartClickLoop()
 
         // Get current mouse position
         Point current = getCurrentMousePos();
-        int origX = randomOffset(current.x, 5);
-        int origY = randomOffset(current.y, 10);
+        int origX = current.x;
+        int origY = current.y;
+        // int origX = randomOffset(current.x, 5);
+        // int origY = randomOffset(current.y, 10);
         // Clamp to screen
         clampToScreen(origX, origY);
 
