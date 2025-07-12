@@ -13,7 +13,7 @@ void moveMouseSmooth(int startX, int startY, int endX, int endY, std::atomic<boo
   std::uniform_int_distribution<> durationDist(minDuration, maxDuration);
 
   // --- Add random offset to the final destination ---
-  int maxFinalOffset = 8; // e.g., up to ±10 pixels
+  int maxFinalOffset = 10; // e.g., up to ±10 pixels
   std::uniform_int_distribution<> finalOffsetDist(-maxFinalOffset, maxFinalOffset);
   int offsetX = finalOffsetDist(rng);
   int offsetY = finalOffsetDist(rng);

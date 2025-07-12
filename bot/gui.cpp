@@ -284,9 +284,12 @@ void MyFrame::StartClickLoop()
 
         moveMouseSmoothReturn(static_cast<int>(targetX), static_cast<int>(targetY), static_cast<int>(origX), static_cast<int>(origY), &isClicking);
 
+        wxMilliSleep(15);
+        leftClick();
         int randomized = baseInterval + dist(gen);
         if (randomized < 1) randomized = 1;
         wxMilliSleep(randomized);
+
 
         // Optionally, move back to original (if you want a round-trip loop)
         // moveMouseSmooth(static_cast<int>(targetX), static_cast<int>(targetY), static_cast<int>(origX), static_cast<int>(origY), &isClicking);

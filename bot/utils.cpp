@@ -62,8 +62,8 @@ void clampToScreenBleed(int &x, int &y)
     ScreenRect bounds = getScreenBounds();
     const int bleedMarginX = (bounds.right - bounds.left) / 20; // 5% on each side
     const int bleedMarginY = (bounds.bottom - bounds.top) / 20; // 5% on top/bottom
-    x = std::clamp(x, bounds.left + bleedMarginX, bounds.right - bleedMarginX);
-    y = std::clamp(y, bounds.top + bleedMarginY, bounds.bottom - bleedMarginY);
+    x = std::clamp(x, bounds.left + bleedMarginX, bounds.right - bleedMarginX - 500);
+    y = std::clamp(y, bounds.top + bleedMarginY, bounds.bottom - bleedMarginY - 100); // leave space for taskbar
 }
 
 std::mt19937 rng(std::chrono::steady_clock::now().time_since_epoch().count());
