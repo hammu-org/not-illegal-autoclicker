@@ -76,6 +76,26 @@ MyFrame::MyFrame() : wxFrame(nullptr, wxID_ANY, "Not Illegal Autoclicker", wxDef
   intervalGrid->Add(lblMs, 0, wxALIGN_CENTER_VERTICAL | wxRIGHT, 2);
   intervalSizer->Add(intervalGrid, 0, wxALL | wxEXPAND, 8);
 
+  // --- Move the offset slider block here ---
+  auto *offsetSizer = new wxBoxSizer(wxHORIZONTAL);
+  offsetLabel = new wxStaticText(panel, wxID_ANY, "Random Offset +- 200ms");
+  offsetSlider = new wxSlider(panel, wxID_ANY, 200, 0, 20000, wxDefaultPosition, wxSize(160, -1));
+
+  // Add tooltips
+  offsetLabel->SetToolTip(
+      "Randomly adds or subtracts up to this ms to each click interval.\n"
+      "e.g. 200ms = up to 200ms shorter or longer than your click interval\n"
+      "(a total range of 400ms)");
+
+  offsetSizer->Add(offsetLabel, 0, wxALIGN_CENTER_VERTICAL | wxRIGHT, 8);
+  offsetSizer->Add(offsetSlider, 1, wxALIGN_CENTER_VERTICAL);
+  intervalSizer->Add(offsetSizer, 0, wxALL | wxEXPAND, 8);
+  offsetSlider->Bind(wxEVT_SLIDER, [this](wxCommandEvent &evt)
+                     {
+    randomOffsetMs = offsetSlider->GetValue();
+    offsetLabel->SetLabel(wxString::Format("Random Offset +- %dms", randomOffsetMs)); });
+  // --- End of offset slider block ---
+
   // Emergency stop controls UI
   auto *stopBox = new wxStaticBox(panel, wxID_ANY, "Emergency Stop (Max Duration)");
   auto *stopSizer = new wxStaticBoxSizer(stopBox, wxVERTICAL);
@@ -105,7 +125,10 @@ MyFrame::MyFrame() : wxFrame(nullptr, wxID_ANY, "Not Illegal Autoclicker", wxDef
   auto *origDivider = new wxStaticLine(panel, wxID_ANY);
   intervalSizer->Add(origDivider, 0, wxEXPAND | wxLEFT | wxRIGHT | wxTOP | wxBOTTOM, 8);
 
-  auto *origTitle = new wxStaticText(panel, wxID_ANY, "Original");
+  auto *origTitle = new wxStaticText(panel, wxID_ANY, "TODO: Original");
+  origTitle->SetToolTip(
+      "Currently unused\n"
+      "Returns back to original cursor right now.");
   intervalSizer->Add(origTitle, 0, wxLEFT, 8);
   auto *origGrid = new wxFlexGridSizer(2, 4, 10, 10);
   auto *lblOriginalX = new wxStaticText(panel, wxID_ANY, "X");
@@ -143,18 +166,6 @@ MyFrame::MyFrame() : wxFrame(nullptr, wxID_ANY, "Not Illegal Autoclicker", wxDef
   // Divider before target position
   auto *divider = new wxStaticLine(panel, wxID_ANY);
   intervalSizer->Add(divider, 0, wxEXPAND | wxLEFT | wxRIGHT | wxTOP | wxBOTTOM, 8);
-
-  // Add random offset slider and label (ms)
-  auto *offsetSizer = new wxBoxSizer(wxHORIZONTAL);
-  offsetLabel = new wxStaticText(panel, wxID_ANY, "Random Offset (ms): 200");
-  offsetSlider = new wxSlider(panel, wxID_ANY, 200, 0, 20000, wxDefaultPosition, wxSize(160, -1));
-  offsetSizer->Add(offsetLabel, 0, wxALIGN_CENTER_VERTICAL | wxRIGHT, 8);
-  offsetSizer->Add(offsetSlider, 1, wxALIGN_CENTER_VERTICAL);
-  intervalSizer->Add(offsetSizer, 0, wxALL | wxEXPAND, 8);
-  offsetSlider->Bind(wxEVT_SLIDER, [this](wxCommandEvent &evt)
-                     {
-    randomOffsetMs = offsetSlider->GetValue();
-    offsetLabel->SetLabel(wxString::Format("Random Offset (ms): %d", randomOffsetMs)); });
 
   clickStatusLabel = new wxStaticText(panel, wxID_ANY, "Click Status: Idle");
   wxFont clickStatusFont = fontBold;
