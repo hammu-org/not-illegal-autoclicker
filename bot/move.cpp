@@ -13,7 +13,7 @@ void moveMouseSmooth(int startX, int startY, int endX, int endY, std::atomic<boo
   std::uniform_int_distribution<> durationDist(minDuration, maxDuration);
 
   // --- Add random offset to the final destination ---
-  int maxFinalOffset = 10; // e.g., up to ±10 pixels
+  int maxFinalOffset = 8; // e.g., up to ±10 pixels
   std::uniform_int_distribution<> finalOffsetDist(-maxFinalOffset, maxFinalOffset);
   int offsetX = finalOffsetDist(rng);
   int offsetY = finalOffsetDist(rng);
@@ -48,16 +48,16 @@ void moveMouseSmooth(int startX, int startY, int endX, int endY, std::atomic<boo
     // y = static_cast<int>(startY + dy * i);
 
     // Random wandering
-    if (wanderChance(rng) < 0.05)
+    if (wanderChance(rng) < 0.25)
     {
       int wx = x + wanderOffset(rng);
       int wy = y + wanderOffset(rng);
       moveMouse(wx, wy);
     }
-    if (wanderChance(rng) < 0.10)
-    {
-      std::this_thread::sleep_for(std::chrono::milliseconds(wanderPause(rng)));
-    }
+    // if (wanderChance(rng) < 0.10)
+    // {
+    //   std::this_thread::sleep_for(std::chrono::milliseconds(wanderPause(rng)));
+    // }
 
     moveMouse(x, y);
     std::this_thread::sleep_for(std::chrono::milliseconds(sleepMs));
@@ -112,16 +112,16 @@ void moveMouseSmoothReturn(int startX, int startY, int endX, int endY, std::atom
     // y = static_cast<int>(startY + dy * i);
 
     // Random wandering
-    if (wanderChance(rng) < 0.05)
+    if (wanderChance(rng) < 0.25)
     {
       int wx = x + wanderOffset(rng);
       int wy = y + wanderOffset(rng);
       moveMouse(wx, wy);
     }
-    if (wanderChance(rng) < 0.10)
-    {
-      std::this_thread::sleep_for(std::chrono::milliseconds(wanderPause(rng)));
-    }
+    // if (wanderChance(rng) < 0.10)
+    // {
+    //   std::this_thread::sleep_for(std::chrono::milliseconds(wanderPause(rng)));
+    // }
 
     moveMouse(x, y);
     std::this_thread::sleep_for(std::chrono::milliseconds(sleepMs));
