@@ -179,6 +179,23 @@ MyFrame::MyFrame() : wxFrame(nullptr, wxID_ANY, "Not Illegal Autoclicker", wxDef
   mainSizer->Add(quitBtn, 0, wxALL | wxEXPAND, 16);
   quitBtn->Bind(wxEVT_BUTTON, [this](wxCommandEvent &)
                 { Close(true); });
+  // --- Add Debug Button ---
+  auto *debugBtn = new wxButton(panel, wxID_ANY, "System Info");
+  debugBtn->SetMinSize(wxSize(0, 40));
+  mainSizer->Add(debugBtn, 0, wxALL | wxEXPAND, 8);
+  debugBtn->Bind(wxEVT_BUTTON, [this](wxCommandEvent &)
+                 {
+    wxString info;
+    info << "wxWidgets version: " << wxVERSION_STRING << "\n";
+    info << "Build: " << wxGetOsDescription() << "\n";
+    info << "Build date: " << __DATE__ << " " << __TIME__ << "\n";
+    info << "Working dir: " << wxGetCwd() << "\n";
+    info << "User: " << wxGetUserName() << "\n";
+    info << "Computer: " << wxGetHostName() << "\n";
+    // Add your own screen bounds info
+    ScreenRect bounds = getScreenBounds();
+    info << wxString::Format("Screen bounds: left=%d top=%d right=%d bottom=%d\n", bounds.left, bounds.top, bounds.right, bounds.bottom);
+    wxMessageBox(info, "System Info", wxOK | wxICON_INFORMATION, this); });
 
   panel->SetSizer(mainSizer);
 
