@@ -8,6 +8,7 @@ class EmergencyStopPanel;
 #include "utils.hpp"
 #define MIN_WIDTH_COL 60
 
+class IntervalPanel;
 class MyFrame : public wxFrame
 {
 public:
@@ -24,14 +25,7 @@ public:
   void StopClickLoop();
 
 private:
-  wxTextCtrl *intervalHourCtrl, *intervalMinCtrl, *intervalSecCtrl, *intervalMsCtrl;
-  wxTextCtrl *originalXCtrl, *originalYCtrl;
-  wxTextCtrl *targetXCtrl, *targetYCtrl;
-  wxStaticText *clickStatusLabel;
-  wxStaticText *offsetLabel;
-  wxSlider *offsetSlider;
-  wxStaticText *cursorPosLabel;
-  wxCheckBox *returnClickCheckBox;
+  IntervalPanel *intervalPanel = nullptr;
   std::atomic<bool> isClicking{false};
   int randomOffsetMs = 200;
   EmergencyStopPanel *emergencyStopPanel = nullptr;

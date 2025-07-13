@@ -1,5 +1,6 @@
 #include "gui.hpp"
 #include "emergency_stop_panel.hpp"
+#include "interval_panel.hpp"
 
 MyFrame::MyFrame() : wxFrame(nullptr, wxID_ANY, "Not Illegal Autoclicker", wxDefaultPosition, wxSize(400, 600))
 {
@@ -13,132 +14,9 @@ MyFrame::MyFrame() : wxFrame(nullptr, wxID_ANY, "Not Illegal Autoclicker", wxDef
   emergencyStopPanel = new EmergencyStopPanel(panel);
   mainSizer->Add(emergencyStopPanel, 0, wxALL | wxEXPAND, 16);
 
-  intervalHourCtrl = new wxTextCtrl(panel, wxID_ANY, "0");
-  intervalMinCtrl = new wxTextCtrl(panel, wxID_ANY, "0");
-  intervalSecCtrl = new wxTextCtrl(panel, wxID_ANY, "0");
-  intervalMsCtrl = new wxTextCtrl(panel, wxID_ANY, "0");
-
-  // --- Click Interval Section ---
-  auto *intervalBox = new wxStaticBox(panel, wxID_ANY, "Click Interval");
-  auto *intervalSizer = new wxStaticBoxSizer(intervalBox, wxVERTICAL);
-
-  // Interval controls
-  auto *intervalGrid = new wxFlexGridSizer(1, 8, 10, 10);
-  auto *lblHour = new wxStaticText(panel, wxID_ANY, "hours");
-  auto *lblMin = new wxStaticText(panel, wxID_ANY, "mins");
-  auto *lblSec = new wxStaticText(panel, wxID_ANY, "secs");
-  auto *lblMs = new wxStaticText(panel, wxID_ANY, "milliseconds");
-
-  intervalHourCtrl->SetMinSize(wxSize(MIN_WIDTH_COL, -1));
-  intervalMinCtrl->SetMinSize(wxSize(MIN_WIDTH_COL, -1));
-  intervalSecCtrl->SetMinSize(wxSize(MIN_WIDTH_COL, -1));
-  intervalMsCtrl->SetMinSize(wxSize(MIN_WIDTH_COL, -1));
-
-  intervalGrid->Add(intervalHourCtrl, 1, wxEXPAND | wxRIGHT, 2);
-  intervalGrid->Add(lblHour, 0, wxALIGN_CENTER_VERTICAL | wxRIGHT, 2);
-  intervalGrid->Add(intervalMinCtrl, 1, wxEXPAND | wxRIGHT, 2);
-  intervalGrid->Add(lblMin, 0, wxALIGN_CENTER_VERTICAL | wxRIGHT, 2);
-  intervalGrid->Add(intervalSecCtrl, 1, wxEXPAND | wxRIGHT, 2);
-  intervalGrid->Add(lblSec, 0, wxALIGN_CENTER_VERTICAL | wxRIGHT, 2);
-  intervalGrid->Add(intervalMsCtrl, 1, wxEXPAND | wxRIGHT, 2);
-  intervalGrid->Add(lblMs, 0, wxALIGN_CENTER_VERTICAL | wxRIGHT, 2);
-  intervalSizer->Add(intervalGrid, 0, wxALL | wxEXPAND, 2);
-
-  // Make the first input field column growable
-  intervalGrid->AddGrowableCol(0, 1);
-  intervalGrid->AddGrowableCol(2, 1);
-  intervalGrid->AddGrowableCol(4, 1);
-  intervalGrid->AddGrowableCol(6, 1);
-  // --- End of Click Interval Section ---
-
-  // --- Move the offset slider block here ---
-  auto *offsetSizer = new wxBoxSizer(wxHORIZONTAL);
-  offsetLabel = new wxStaticText(panel, wxID_ANY, "Random Offset +- 200ms");
-  offsetSlider = new wxSlider(panel, wxID_ANY, 200, 0, 20000, wxDefaultPosition, wxSize(120, -1));
-
-  // Add tooltips
-  offsetLabel->SetToolTip(
-      "Randomly adds or subtracts up to this ms to each click interval.\n"
-      "e.g. 200ms = up to 200ms shorter or longer than your click interval\n"
-      "(a total range of 400ms)");
-
-  offsetSizer->Add(offsetLabel, 0, wxALIGN_CENTER_VERTICAL | wxRIGHT, 8);
-  offsetSizer->Add(offsetSlider, 1, wxALIGN_CENTER_VERTICAL);
-  intervalSizer->Add(offsetSizer, 0, wxALL | wxEXPAND, 8);
-  offsetSlider->Bind(wxEVT_SLIDER, [this](wxCommandEvent &evt)
-                     {
-    randomOffsetMs = offsetSlider->GetValue();
-    offsetLabel->SetLabel(wxString::Format("Random Offset +- %dms", randomOffsetMs)); });
-  // --- End of offset slider block ---
-
-  // Divider before original position
-  auto *origDivider = new wxStaticLine(panel, wxID_ANY);
-  intervalSizer->Add(origDivider, 0, wxEXPAND | wxLEFT | wxRIGHT | wxTOP | wxBOTTOM, 8);
-
-  auto *origTitle = new wxStaticText(panel, wxID_ANY, "TODO: Original");
-  origTitle->SetToolTip(
-      "Currently unused\n"
-      "Returns back to original cursor right now.");
-  intervalSizer->Add(origTitle, 0, wxLEFT, 8);
-  auto *origGrid = new wxFlexGridSizer(2, 4, 10, 10);
-  auto *lblOriginalX = new wxStaticText(panel, wxID_ANY, "X");
-  originalXCtrl = new wxTextCtrl(panel, wxID_ANY, "0");
-  auto *lblOriginalY = new wxStaticText(panel, wxID_ANY, "Y");
-  originalYCtrl = new wxTextCtrl(panel, wxID_ANY, "0");
-  originalXCtrl->SetMinSize(wxSize(MIN_WIDTH_COL, -1));
-  originalYCtrl->SetMinSize(wxSize(MIN_WIDTH_COL, -1));
-  origGrid->Add(lblOriginalX, 0, wxALIGN_CENTER_VERTICAL | wxRIGHT, 2);
-  origGrid->Add(originalXCtrl, 1, wxALIGN_CENTER_VERTICAL | wxRIGHT, 8);
-  origGrid->Add(lblOriginalY, 0, wxALIGN_CENTER_VERTICAL | wxRIGHT, 2);
-  origGrid->Add(originalYCtrl, 1, wxALIGN_CENTER_VERTICAL | wxRIGHT, 8);
-  intervalSizer->Add(origGrid, 0, wxALL | wxEXPAND, 8);
-
-  // Target controls
-  auto *targetTitle = new wxStaticText(panel, wxID_ANY, "Target");
-  intervalSizer->Add(targetTitle, 0, wxLEFT, 8);
-  auto *targetGrid = new wxFlexGridSizer(1, 4, 10, 10);
-  auto *lblTargetX = new wxStaticText(panel, wxID_ANY, "X");
-  targetXCtrl = new wxTextCtrl(panel, wxID_ANY, "0");
-  auto *lblTargetY = new wxStaticText(panel, wxID_ANY, "Y");
-  targetYCtrl = new wxTextCtrl(panel, wxID_ANY, "0");
-  targetXCtrl->SetMinSize(wxSize(MIN_WIDTH_COL, -1));
-  targetYCtrl->SetMinSize(wxSize(MIN_WIDTH_COL, -1));
-  targetGrid->Add(lblTargetX, 0, wxALIGN_CENTER_VERTICAL | wxRIGHT, 2);
-  targetGrid->Add(targetXCtrl, 1, wxALIGN_CENTER_VERTICAL | wxRIGHT, 8);
-  targetGrid->Add(lblTargetY, 0, wxALIGN_CENTER_VERTICAL | wxRIGHT, 2);
-  targetGrid->Add(targetYCtrl, 1, wxALIGN_CENTER_VERTICAL | wxRIGHT, 8);
-  intervalSizer->Add(targetGrid, 0, wxALL | wxEXPAND, 8);
-  auto *cursorPosTitle = new wxStaticText(panel, wxID_ANY, "Current Cursor Position");
-  cursorPosLabel = new wxStaticText(panel, wxID_ANY, "X: --  Y: --");
-  intervalSizer->Add(cursorPosTitle, 0, wxALL | wxEXPAND, 8);
-  intervalSizer->Add(cursorPosLabel, 0, wxALL | wxEXPAND, 8);
-
-  // Add return click checkbox
-  returnClickCheckBox = new wxCheckBox(panel, wxID_ANY, "Enable return click (click at original position after target)");
-  returnClickCheckBox->SetValue(true); // Default enabled
-  intervalSizer->Add(returnClickCheckBox, 0, wxALL, 8);
-
-  // Divider before target position
-  auto *divider = new wxStaticLine(panel, wxID_ANY);
-  intervalSizer->Add(divider, 0, wxEXPAND | wxLEFT | wxRIGHT | wxTOP | wxBOTTOM, 8);
-
-  clickStatusLabel = new wxStaticText(panel, wxID_ANY, "Click Status: Idle");
-  wxFont clickStatusFont = fontBold;
-  clickStatusFont.SetPointSize(11);
-  clickStatusLabel->SetFont(clickStatusFont);
-  intervalSizer->Add(clickStatusLabel, 0, wxALL | wxEXPAND, 6);
-
-  // Show correct hotkey label depending on platform
-#ifdef __WXMSW__
-  auto *clickHotkeyLabel = new wxStaticText(panel, wxID_ANY, "Hotkey: F13 (Windows) to Start/Stop Clicking");
-#else
-  auto *clickHotkeyLabel = new wxStaticText(panel, wxID_ANY, "Hotkey: F12 (Mac) to Start/Stop Clicking");
-#endif
-  wxFont clickHotkeyFont = fontBold;
-  clickHotkeyFont.SetPointSize(9);
-  clickHotkeyLabel->SetFont(clickHotkeyFont);
-  intervalSizer->Add(clickHotkeyLabel, 0, wxLEFT | wxRIGHT | wxBOTTOM, 6);
-  mainSizer->Add(intervalSizer, 0, wxALL | wxEXPAND, 16);
+  // Interval Panel
+  intervalPanel = new IntervalPanel(panel);
+  mainSizer->Add(intervalPanel, 0, wxALL | wxEXPAND, 16);
 
   auto *quitBtn = new wxButton(panel, wxID_EXIT, "Quit");
   quitBtn->SetMinSize(wxSize(0, 40));
@@ -180,16 +58,13 @@ MyFrame::MyFrame() : wxFrame(nullptr, wxID_ANY, "Not Illegal Autoclicker", wxDef
 
   // Bind mouse left down event to update cursor position label
   panel->Bind(wxEVT_LEFT_DOWN, &MyFrame::OnMouseLeftDown, this);
-
-  intervalSizer->SetMinSize(wxSize(0, 0)); // Let it shrink
-  // removed: stopSizer->SetMinSize(wxSize(0, 0));
 }
 
 void MyFrame::OnClick(wxCommandEvent &)
 {
   // Get and display cursor position on click
   wxPoint pos = wxGetMousePosition();
-  cursorPosLabel->SetLabel(wxString::Format("X: %d  Y: %d", pos.x, pos.y));
+  intervalPanel->SetCursorPosLabel(wxString::Format("X: %d  Y: %d", pos.x, pos.y));
   StartClickLoop();
 }
 
@@ -197,7 +72,7 @@ void MyFrame::OnHotkey(wxKeyEvent &)
 {
   // Get and display cursor position on hotkey
   wxPoint pos = wxGetMousePosition();
-  cursorPosLabel->SetLabel(wxString::Format("X: %d  Y: %d", pos.x, pos.y));
+  intervalPanel->SetCursorPosLabel(wxString::Format("X: %d  Y: %d", pos.x, pos.y));
   if (isClicking)
     StopClickLoop();
   else
@@ -209,17 +84,12 @@ void MyFrame::StartClickLoop()
   if (!isClicking)
   {
     isClicking = true;
-    clickStatusLabel->SetLabel("Click Status: Clicking...");
+    intervalPanel->SetClickStatusLabel("Click Status: Clicking...");
 
     // Start click loop in a new thread to avoid blocking UI
     std::thread([this]()
                 {
-      long hr = 0, min = 0, sec = 0, ms = 0;
-      intervalHourCtrl->GetValue().ToLong(&hr);
-      intervalMinCtrl->GetValue().ToLong(&min);
-      intervalSecCtrl->GetValue().ToLong(&sec);
-      intervalMsCtrl->GetValue().ToLong(&ms);
-      long baseInterval = hr * 3600000 + min * 60000 + sec * 1000 + ms;
+      long baseInterval = intervalPanel->GetTotalMilliseconds();
       if (baseInterval < 1) baseInterval = 1;
 
       // Emergency stop duration
@@ -230,7 +100,7 @@ void MyFrame::StartClickLoop()
       // Setup randomizer for 7user-selected offset in ms
       std::random_device rd;
       std::mt19937 gen(rd());
-      int offsetRange = randomOffsetMs;
+      int offsetRange = intervalPanel->GetRandomOffsetMs();
       std::uniform_int_distribution<int> dist(-offsetRange, offsetRange);
 
       while (isClicking)
@@ -243,8 +113,7 @@ void MyFrame::StartClickLoop()
           break;
         }
         long targetX = 0, targetY = 0;
-        targetXCtrl->GetValue().ToLong(&targetX);
-        targetYCtrl->GetValue().ToLong(&targetY);
+        intervalPanel->GetTarget(targetX, targetY);
 
         // Get current mouse position
         MyPoint current = getCurrentMousePos();
@@ -260,13 +129,13 @@ void MyFrame::StartClickLoop()
 
         // Ensure mouse is at target before clicking
         wxTheApp->CallAfter([this, targetX, targetY]() {
-          cursorPosLabel->SetLabel(wxString::Format("X: %ld  Y: %ld", targetX, targetY));
+          intervalPanel->SetCursorPosLabel(wxString::Format("X: %ld  Y: %ld", targetX, targetY));
         });
         wxMilliSleep(15);
         leftClick();
 
         moveMouseSmoothReturn(static_cast<int>(targetX), static_cast<int>(targetY), static_cast<int>(origX), static_cast<int>(origY), &isClicking);
-        if (returnClickCheckBox->IsChecked()) {
+        if (intervalPanel->IsReturnClickEnabled()) {
           wxMilliSleep(15);
           leftClick();
         }
@@ -280,7 +149,7 @@ void MyFrame::StartClickLoop()
       }
       wxTheApp->CallAfter([this]() {
         isClicking = false;
-        clickStatusLabel->SetLabel("Click Status: Idle");
+        intervalPanel->SetClickStatusLabel("Click Status: Idle");
       }); })
         .detach();
   }
@@ -289,7 +158,7 @@ void MyFrame::StartClickLoop()
 void MyFrame::StopClickLoop()
 {
   isClicking = false;
-  clickStatusLabel->SetLabel("Click Status: Idle");
+  intervalPanel->SetClickStatusLabel("Click Status: Idle");
 }
 
 void MyFrame::OnClose(wxCloseEvent &event)
@@ -301,6 +170,6 @@ void MyFrame::OnClose(wxCloseEvent &event)
 void MyFrame::OnMouseLeftDown(wxMouseEvent &event)
 {
   wxPoint pos = wxGetMousePosition();
-  cursorPosLabel->SetLabel(wxString::Format("X: %d  Y: %d", pos.x, pos.y));
+  intervalPanel->SetCursorPosLabel(wxString::Format("X: %d  Y: %d", pos.x, pos.y));
   event.Skip();
 }

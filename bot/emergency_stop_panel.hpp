@@ -1,5 +1,10 @@
 #pragma once
-#include "gui.hpp"
+#include <wx/wx.h>
+#include <wx/sizer.h>
+#include <wx/textctrl.h>
+#include <wx/stattext.h>
+#include <wx/statbox.h>
+#define MIN_WIDTH_COL 60
 
 class EmergencyStopPanel : public wxPanel
 {
