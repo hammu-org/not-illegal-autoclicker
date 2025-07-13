@@ -1,38 +1,4 @@
-#include <wx/wx.h>
-#include <wx/event.h>
-#include <wx/statline.h>
-#include "move.hpp"
-#include "utils.hpp"
-#define MIN_WIDTH_COL 60
-
-class MyFrame : public wxFrame
-{
-public:
-  enum
-  {
-    ID_HOTKEY_F12 = wxID_HIGHEST + 1
-  };
-  MyFrame();
-  void OnMouseLeftDown(wxMouseEvent &event);
-  void OnClick(wxCommandEvent &);
-  void OnF10Hotkey(wxKeyEvent &);
-  void OnClose(wxCloseEvent &event);
-  void StartClickLoop();
-  void StopClickLoop();
-
-private:
-  wxTextCtrl *intervalHourCtrl, *intervalMinCtrl, *intervalSecCtrl, *intervalMsCtrl;
-  wxTextCtrl *stopHourCtrl, *stopMinCtrl, *stopSecCtrl, *stopMsCtrl;
-  wxTextCtrl *originalXCtrl, *originalYCtrl;
-  wxTextCtrl *targetXCtrl, *targetYCtrl;
-  wxStaticText *clickStatusLabel;
-  wxStaticText *offsetLabel;
-  wxSlider *offsetSlider;
-  wxStaticText *cursorPosLabel;    // New label for cursor position
-  wxCheckBox *returnClickCheckBox; // Checkbox for return click
-  std::atomic<bool> isClicking{false};
-  int randomOffsetMs = 200;
-};
+#include "gui.hpp"
 
 MyFrame::MyFrame() : wxFrame(nullptr, wxID_ANY, "Not Illegal Autoclicker", wxDefaultPosition, wxSize(400, 600))
 {
@@ -241,7 +207,7 @@ MyFrame::MyFrame() : wxFrame(nullptr, wxID_ANY, "Not Illegal Autoclicker", wxDef
   // On Mac and others, use WXK_F12 and no modifier
   RegisterHotKey(ID_HOTKEY_F12, wxMOD_NONE, WXK_F12);
 #endif
-  Bind(wxEVT_HOTKEY, &MyFrame::OnF10Hotkey, this, ID_HOTKEY_F12);
+  Bind(wxEVT_HOTKEY, &MyFrame::OnHotkey, this, ID_HOTKEY_F12);
   Bind(wxEVT_CLOSE_WINDOW, &MyFrame::OnClose, this);
 
   // Bind mouse left down event to update cursor position label
@@ -259,7 +225,7 @@ void MyFrame::OnClick(wxCommandEvent &)
   StartClickLoop();
 }
 
-void MyFrame::OnF10Hotkey(wxKeyEvent &)
+void MyFrame::OnHotkey(wxKeyEvent &)
 {
   // Get and display cursor position on hotkey
   wxPoint pos = wxGetMousePosition();
@@ -368,19 +334,6 @@ void MyFrame::OnClose(wxCloseEvent &event)
   UnregisterHotKey(MyFrame::ID_HOTKEY_F12);
   event.Skip();
 }
-
-class MyApp : public wxApp
-{
-public:
-  bool OnInit() override
-  {
-    auto *frame = new MyFrame();
-    frame->Show();
-    return true;
-  }
-};
-
-wxIMPLEMENT_APP(MyApp);
 
 void MyFrame::OnMouseLeftDown(wxMouseEvent &event)
 {
