@@ -5,7 +5,7 @@
 #include <iostream>
 #include <algorithm>
 
-struct Point
+struct MyPoint
 {
     int x;
     int y;
@@ -20,7 +20,7 @@ struct ScreenRect
     int bottom;
 };
 
-Point getCurrentMousePos();
+MyPoint getCurrentMousePos();
 ScreenRect getScreenBounds();
 void clampToScreen(int &x, int &y);
 void clampToScreenBleed(int &x, int &y);

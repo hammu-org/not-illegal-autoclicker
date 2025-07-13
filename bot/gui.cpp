@@ -292,7 +292,7 @@ void MyFrame::StartClickLoop()
         targetYCtrl->GetValue().ToLong(&targetY);
 
         // Get current mouse position
-        Point current = getCurrentMousePos();
+        MyPoint current = getCurrentMousePos();
         int origX = current.x;
         int origY = current.y;
         // int origX = randomOffset(current.x, 5);

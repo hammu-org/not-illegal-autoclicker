@@ -6,7 +6,7 @@
 #include <ApplicationServices/ApplicationServices.h>
 #endif
 
-Point getCurrentMousePos()
+MyPoint getCurrentMousePos()
 {
 #ifdef _WIN32
     POINT p;
