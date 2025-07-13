@@ -43,7 +43,6 @@ MyFrame::MyFrame() : wxFrame(nullptr, wxID_ANY, "Not Illegal Autoclicker", wxDef
 
   /// Set the main sizer for the panel
   panel->SetSizer(mainSizer);
-  // panel->SetMaxSize(wxSize(420, -1));
 
   // Register F13 on Windows, F12 on Mac/others for start/stop clicking
 #ifdef __WXMSW__
