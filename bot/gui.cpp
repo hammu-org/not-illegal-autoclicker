@@ -34,9 +34,9 @@ private:
   int randomOffsetMs = 200;
 };
 
-MyFrame::MyFrame() : wxFrame(nullptr, wxID_ANY, "Not Illegal Autoclicker", wxDefaultPosition, wxSize(600, 600))
+MyFrame::MyFrame() : wxFrame(nullptr, wxID_ANY, "Not Illegal Autoclicker", wxDefaultPosition, wxSize(400, 600))
 {
-  SetMinSize(wxSize(600, 600));
+  SetMinSize(wxSize(400, 600));
   auto *panel = new wxPanel(this);
   auto *mainSizer = new wxBoxSizer(wxVERTICAL);
 
@@ -53,7 +53,38 @@ MyFrame::MyFrame() : wxFrame(nullptr, wxID_ANY, "Not Illegal Autoclicker", wxDef
 
   wxFont fontBold(10, wxFONTFAMILY_DEFAULT, wxFONTSTYLE_NORMAL, wxFONTWEIGHT_BOLD);
 
-  // Group: Click Interval
+  // --- Emergency Stop Section ---
+  auto *stopBox = new wxStaticBox(panel, wxID_ANY, "Emergency Stop (Max Duration)");
+  auto *stopSizer = new wxStaticBoxSizer(stopBox, wxVERTICAL);
+  auto *stopGrid = new wxFlexGridSizer(1, 8, 10, 10);
+  auto *lblStopHour = new wxStaticText(panel, wxID_ANY, "hours");
+  auto *lblStopMin = new wxStaticText(panel, wxID_ANY, "mins");
+  auto *lblStopSec = new wxStaticText(panel, wxID_ANY, "secs");
+  auto *lblStopMs = new wxStaticText(panel, wxID_ANY, "milliseconds");
+  // Set minimum width for controls instead of wxEXPAND
+  stopHourCtrl->SetMinSize(wxSize(MIN_WIDTH_COL, -1));
+  stopMinCtrl->SetMinSize(wxSize(MIN_WIDTH_COL, -1));
+  stopSecCtrl->SetMinSize(wxSize(MIN_WIDTH_COL, -1));
+  stopMsCtrl->SetMinSize(wxSize(MIN_WIDTH_COL, -1));
+
+  stopGrid->Add(stopHourCtrl);
+  stopGrid->Add(lblStopHour, 0, wxALIGN_CENTER_VERTICAL | wxRIGHT, 2);
+  stopGrid->Add(stopMinCtrl, 1, wxEXPAND | wxRIGHT, 2);
+  stopGrid->Add(lblStopMin, 0, wxALIGN_CENTER_VERTICAL | wxRIGHT, 2);
+  stopGrid->Add(stopSecCtrl, 1, wxEXPAND | wxRIGHT, 2);
+  stopGrid->Add(lblStopSec, 0, wxALIGN_CENTER_VERTICAL | wxRIGHT, 2);
+  stopGrid->Add(stopMsCtrl, 1, wxEXPAND | wxRIGHT, 2);
+  stopGrid->Add(lblStopMs, 0, wxALIGN_CENTER_VERTICAL | wxRIGHT, 2);
+  stopSizer->Add(stopGrid, 0, wxALL | wxEXPAND, 8);
+  stopGrid->AddGrowableCol(0, 1);
+  stopGrid->AddGrowableCol(2, 1);
+  stopGrid->AddGrowableCol(4, 1);
+  stopGrid->AddGrowableCol(6, 1);
+
+  mainSizer->Add(stopSizer, 0, wxALL | wxEXPAND, 16);
+  // --- End of Emergency Stop Section ---
+
+  // --- Click Interval Section ---
   auto *intervalBox = new wxStaticBox(panel, wxID_ANY, "Click Interval");
   auto *intervalSizer = new wxStaticBoxSizer(intervalBox, wxVERTICAL);
 
@@ -63,24 +94,33 @@ MyFrame::MyFrame() : wxFrame(nullptr, wxID_ANY, "Not Illegal Autoclicker", wxDef
   auto *lblMin = new wxStaticText(panel, wxID_ANY, "mins");
   auto *lblSec = new wxStaticText(panel, wxID_ANY, "secs");
   auto *lblMs = new wxStaticText(panel, wxID_ANY, "milliseconds");
+
   intervalHourCtrl->SetMinSize(wxSize(MIN_WIDTH_COL, -1));
   intervalMinCtrl->SetMinSize(wxSize(MIN_WIDTH_COL, -1));
   intervalSecCtrl->SetMinSize(wxSize(MIN_WIDTH_COL, -1));
   intervalMsCtrl->SetMinSize(wxSize(MIN_WIDTH_COL, -1));
-  intervalGrid->Add(intervalHourCtrl, 1, wxRIGHT, 8);
+
+  intervalGrid->Add(intervalHourCtrl, 1, wxEXPAND | wxRIGHT, 2);
   intervalGrid->Add(lblHour, 0, wxALIGN_CENTER_VERTICAL | wxRIGHT, 2);
-  intervalGrid->Add(intervalMinCtrl, 1, wxRIGHT, 8);
+  intervalGrid->Add(intervalMinCtrl, 1, wxEXPAND | wxRIGHT, 2);
   intervalGrid->Add(lblMin, 0, wxALIGN_CENTER_VERTICAL | wxRIGHT, 2);
-  intervalGrid->Add(intervalSecCtrl, 1, wxRIGHT, 8);
+  intervalGrid->Add(intervalSecCtrl, 1, wxEXPAND | wxRIGHT, 2);
   intervalGrid->Add(lblSec, 0, wxALIGN_CENTER_VERTICAL | wxRIGHT, 2);
-  intervalGrid->Add(intervalMsCtrl, 1, wxRIGHT, 2);
+  intervalGrid->Add(intervalMsCtrl, 1, wxEXPAND | wxRIGHT, 2);
   intervalGrid->Add(lblMs, 0, wxALIGN_CENTER_VERTICAL | wxRIGHT, 2);
-  intervalSizer->Add(intervalGrid, 0, wxALL | wxEXPAND, 8);
+  intervalSizer->Add(intervalGrid, 0, wxALL | wxEXPAND, 2);
+
+  // Make the first input field column growable
+  intervalGrid->AddGrowableCol(0, 1);
+  intervalGrid->AddGrowableCol(2, 1);
+  intervalGrid->AddGrowableCol(4, 1);
+  intervalGrid->AddGrowableCol(6, 1);
+  // --- End of Click Interval Section ---
 
   // --- Move the offset slider block here ---
   auto *offsetSizer = new wxBoxSizer(wxHORIZONTAL);
   offsetLabel = new wxStaticText(panel, wxID_ANY, "Random Offset +- 200ms");
-  offsetSlider = new wxSlider(panel, wxID_ANY, 200, 0, 20000, wxDefaultPosition, wxSize(160, -1));
+  offsetSlider = new wxSlider(panel, wxID_ANY, 200, 0, 20000, wxDefaultPosition, wxSize(120, -1));
 
   // Add tooltips
   offsetLabel->SetToolTip(
@@ -96,32 +136,6 @@ MyFrame::MyFrame() : wxFrame(nullptr, wxID_ANY, "Not Illegal Autoclicker", wxDef
     randomOffsetMs = offsetSlider->GetValue();
     offsetLabel->SetLabel(wxString::Format("Random Offset +- %dms", randomOffsetMs)); });
   // --- End of offset slider block ---
-
-  // Emergency stop controls UI
-  auto *stopBox = new wxStaticBox(panel, wxID_ANY, "Emergency Stop (Max Duration)");
-  auto *stopSizer = new wxStaticBoxSizer(stopBox, wxVERTICAL);
-  auto *stopGrid = new wxFlexGridSizer(1, 8, 10, 10);
-  auto *lblStopHour = new wxStaticText(panel, wxID_ANY, "hours");
-  auto *lblStopMin = new wxStaticText(panel, wxID_ANY, "mins");
-  auto *lblStopSec = new wxStaticText(panel, wxID_ANY, "secs");
-  auto *lblStopMs = new wxStaticText(panel, wxID_ANY, "milliseconds");
-  // Set minimum width for controls instead of wxEXPAND
-  stopHourCtrl->SetMinSize(wxSize(MIN_WIDTH_COL, -1));
-  stopMinCtrl->SetMinSize(wxSize(MIN_WIDTH_COL, -1));
-  stopSecCtrl->SetMinSize(wxSize(MIN_WIDTH_COL, -1));
-  stopMsCtrl->SetMinSize(wxSize(MIN_WIDTH_COL, -1));
-
-  stopGrid->Add(stopHourCtrl, 1, wxRIGHT, 8);
-  stopGrid->Add(lblStopHour, 0, wxALIGN_CENTER_VERTICAL | wxRIGHT, 2);
-  stopGrid->Add(stopMinCtrl, 1, wxRIGHT, 8);
-  stopGrid->Add(lblStopMin, 0, wxALIGN_CENTER_VERTICAL | wxRIGHT, 2);
-  stopGrid->Add(stopSecCtrl, 1, wxRIGHT, 8);
-  stopGrid->Add(lblStopSec, 0, wxALIGN_CENTER_VERTICAL | wxRIGHT, 2);
-  stopGrid->Add(stopMsCtrl, 1, wxRIGHT, 2);
-  stopGrid->Add(lblStopMs, 0, wxALIGN_CENTER_VERTICAL | wxRIGHT, 2);
-  stopSizer->Add(stopGrid, 0, wxALL | wxEXPAND, 8);
-
-  mainSizer->Add(stopSizer, 0, wxALL | wxEXPAND, 16);
 
   // Divider before original position
   auto *origDivider = new wxStaticLine(panel, wxID_ANY);
@@ -215,7 +229,9 @@ MyFrame::MyFrame() : wxFrame(nullptr, wxID_ANY, "Not Illegal Autoclicker", wxDef
     info << wxString::Format("Screen bounds: left=%d top=%d right=%d bottom=%d\n", bounds.left, bounds.top, bounds.right, bounds.bottom);
     wxMessageBox(info, "System Info", wxOK | wxICON_INFORMATION, this); });
 
+  /// Set the main sizer for the panel
   panel->SetSizer(mainSizer);
+  // panel->SetMaxSize(wxSize(420, -1));
 
   // Register F13 on Windows, F12 on Mac/others for start/stop clicking
 #ifdef __WXMSW__
@@ -230,6 +246,9 @@ MyFrame::MyFrame() : wxFrame(nullptr, wxID_ANY, "Not Illegal Autoclicker", wxDef
 
   // Bind mouse left down event to update cursor position label
   panel->Bind(wxEVT_LEFT_DOWN, &MyFrame::OnMouseLeftDown, this);
+
+  intervalSizer->SetMinSize(wxSize(0, 0)); // Let it shrink
+  stopSizer->SetMinSize(wxSize(0, 0));     // Let it shrink
 }
 
 void MyFrame::OnClick(wxCommandEvent &)
