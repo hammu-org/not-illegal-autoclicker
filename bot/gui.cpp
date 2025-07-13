@@ -28,7 +28,8 @@ private:
   wxStaticText *clickStatusLabel;
   wxStaticText *offsetLabel;
   wxSlider *offsetSlider;
-  wxStaticText *cursorPosLabel; // New label for cursor position
+  wxStaticText *cursorPosLabel;    // New label for cursor position
+  wxCheckBox *returnClickCheckBox; // Checkbox for return click
   std::atomic<bool> isClicking{false};
   int randomOffsetMs = 200;
 };
@@ -119,6 +120,7 @@ MyFrame::MyFrame() : wxFrame(nullptr, wxID_ANY, "Not Illegal Autoclicker", wxDef
   stopGrid->Add(stopMsCtrl, 1, wxRIGHT, 2);
   stopGrid->Add(lblStopMs, 0, wxALIGN_CENTER_VERTICAL | wxRIGHT, 2);
   stopSizer->Add(stopGrid, 0, wxALL | wxEXPAND, 8);
+
   mainSizer->Add(stopSizer, 0, wxALL | wxEXPAND, 16);
 
   // Divider before original position
@@ -162,6 +164,11 @@ MyFrame::MyFrame() : wxFrame(nullptr, wxID_ANY, "Not Illegal Autoclicker", wxDef
   cursorPosLabel = new wxStaticText(panel, wxID_ANY, "X: --  Y: --");
   intervalSizer->Add(cursorPosTitle, 0, wxALL | wxEXPAND, 8);
   intervalSizer->Add(cursorPosLabel, 0, wxALL | wxEXPAND, 8);
+
+  // Add return click checkbox
+  returnClickCheckBox = new wxCheckBox(panel, wxID_ANY, "Enable return click (click at original position after target)");
+  returnClickCheckBox->SetValue(true); // Default enabled
+  intervalSizer->Add(returnClickCheckBox, 0, wxALL, 8);
 
   // Divider before target position
   auto *divider = new wxStaticLine(panel, wxID_ANY);
@@ -311,9 +318,10 @@ void MyFrame::StartClickLoop()
         leftClick();
 
         moveMouseSmoothReturn(static_cast<int>(targetX), static_cast<int>(targetY), static_cast<int>(origX), static_cast<int>(origY), &isClicking);
-
-        wxMilliSleep(15);
-        leftClick();
+        if (returnClickCheckBox->IsChecked()) {
+          wxMilliSleep(15);
+          leftClick();
+        }
         int randomized = baseInterval + dist(gen);
         if (randomized < 1) randomized = 1;
         wxMilliSleep(randomized);
