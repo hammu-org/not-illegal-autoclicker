@@ -1,4 +1,6 @@
 #pragma once
+
+class EmergencyStopPanel;
 #include <wx/wx.h>
 #include <wx/event.h>
 #include <wx/statline.h>
@@ -23,7 +25,6 @@ public:
 
 private:
   wxTextCtrl *intervalHourCtrl, *intervalMinCtrl, *intervalSecCtrl, *intervalMsCtrl;
-  wxTextCtrl *stopHourCtrl, *stopMinCtrl, *stopSecCtrl, *stopMsCtrl;
   wxTextCtrl *originalXCtrl, *originalYCtrl;
   wxTextCtrl *targetXCtrl, *targetYCtrl;
   wxStaticText *clickStatusLabel;
@@ -33,4 +34,5 @@ private:
   wxCheckBox *returnClickCheckBox;
   std::atomic<bool> isClicking{false};
   int randomOffsetMs = 200;
+  EmergencyStopPanel *emergencyStopPanel = nullptr;
 };
